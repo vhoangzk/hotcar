@@ -9,11 +9,11 @@ package com.example.hotCar.until;
  *
  * @author Lab06
  */
-public class CustomErrorType {
+public class CustomResponse {
  
     private String errorMessage;
  
-    public CustomErrorType(String errorMessage){
+    public CustomResponse(String errorMessage){
         this.errorMessage = errorMessage;
     }
  
