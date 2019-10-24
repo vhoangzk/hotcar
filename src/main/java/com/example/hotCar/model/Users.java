@@ -1,0 +1,131 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.example.hotCar.model;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import java.io.Serializable;
+import javax.persistence.*;
+
+/**
+ *
+ * @author Lab06
+ */
+@Entity
+@Table(name = "users")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+public class Users implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+    
+    private String fullName;
+    private String image;
+    private String email;
+    private String password;
+    private Integer gender;
+    private String phone;
+    private Integer status;
+    private Integer dateCreated;
+
+    public Users() {
+    }
+
+    public Users(Integer id) {
+        this.id = id;
+    }
+
+    public Users(Integer id, String fullName, String image, String email, String password, Integer gender, String phone, Integer status, Integer dateCreated) {
+        this.id = id;
+        this.fullName = fullName;
+        this.image = image;
+        this.email = email;
+        this.password = password;
+        this.gender = gender;
+        this.phone = phone;
+        this.status = status;
+        this.dateCreated = dateCreated;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public Integer getGender() {
+        return gender;
+    }
+
+    public void setGender(Integer gender) {
+        this.gender = gender;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
+    public Integer getDateCreated() {
+        return dateCreated;
+    }
+
+    public void setDateCreated(Integer dateCreated) {
+        this.dateCreated = dateCreated;
+    }
+    
+    
+    
+    
+    
+    
+}
