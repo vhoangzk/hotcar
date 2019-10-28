@@ -11,6 +11,7 @@ import com.example.hotCar.until.Constants;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Date;
 import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,31 +40,48 @@ public class UserApiController {
 
     // -------------------Retrieve Single User------------------------------------------
     @RequestMapping(value = "/login", method = RequestMethod.GET)
-    public ResponseEntity<Users> login(String email, String password) throws JsonProcessingException, NoSuchAlgorithmException, UnsupportedEncodingException {
-        logger.info("Fetching User with id {}", email);
-        Users user = userService.findByEmail(email);
-        String rtn;
-        if (user != null && Constants.encryptMD5(password).equals(user.getPassword())) {
-            rtn = Constants.JsonResponse("SUCCESS", user, "OK");
-        } else {
-            rtn = Constants.JsonResponse("SUCCESS", null, "Sai tên đăng nhập hoặc mật khẩu");
+    public ResponseEntity<Users> login(String email, String password, String gcm_id, String ime) throws JsonProcessingException, NoSuchAlgorithmException, UnsupportedEncodingException {
+        ResponseEntity rtn;
+        if (email.length() == 0 || password.length() == 0) {
+            return Constants.JsonResponse(Constants.ERROR, null, "Missing param", null);
         }
-        return new ResponseEntity(rtn, returnStt);
+        Users user = userService.findByEmail(email);
+        if (user != null && Constants.encryptMD5(password).equals(user.getPassword())) {
+            rtn = Constants.JsonResponse(Constants.SUCCESS, user, "OK", null);
+        } else {
+            rtn = Constants.JsonResponse(Constants.ERROR, null, "Sai tên đăng nhập hoặc mật khẩu", null);
+        }
+        return rtn;
     }
 
-    @RequestMapping(value = "/create", method = RequestMethod.GET)
-    public ResponseEntity<Users> createNew(String email, String password) throws JsonProcessingException {
+    @RequestMapping(value = "/register", method = RequestMethod.GET)
+    public ResponseEntity<Users> createNew(String name, Integer gender, String email, String phone, String password) throws JsonProcessingException {
+        if (email.length() == 0 || password.length() == 0) {
+            return Constants.JsonResponse(Constants.ERROR, null, "Missing param", null);
+        }
         Users checkExist = userService.findByEmail(email);
         if (checkExist != null) {
-            return new ResponseEntity(Constants.JsonResponse("ERROR", null, "Email đã tồn tại"), returnStt);
+            return Constants.JsonResponse(Constants.ERROR, null, "Email đã tồn tại", null);
         } else {
             Users u = new Users();
+            Date d = new Date();
+            long time = d.getTime()/1000;
+            
+            u.setEmail(email);
+            u.setPassword(Constants.encryptMD5(password));
+            u.setFullName(name);
+            u.setDateCreated((int) time);
+            u.setImage("a");
+            u.setGender(gender);
+            u.setPhone(phone);
+            u.setStatus(1);
+            
             userService.save(u);
-            return new ResponseEntity(Constants.JsonResponse("SUCCESS", null, "OK"), returnStt);
+            return Constants.JsonResponse(Constants.SUCCESS, u, "OK", null);
         }
     }
 
-    @RequestMapping(value = "/contact/id", method = RequestMethod.GET)
+    @RequestMapping(value = "/edit", method = RequestMethod.GET)
     public Users findContact(String name, String id) {
         if (id.equals("")) {
             ResponseEntity.notFound().build();

@@ -12,14 +12,20 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 /**
  *
  * @author Lab06
  */
 public class Constants {
-    public String success = "SUCCESS";
-    public String error = "ERROR";
+
+    public static String SUCCESS = "SUCCESS";
+    public static String ERROR = "ERROR";
+    public static Integer STT_ACTIVE = 1;
+    public static Integer STT_INACTIVE = 2;
+
     public static String encryptMD5(String input) {
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");
@@ -35,14 +41,17 @@ public class Constants {
             throw new RuntimeException(e);
         }
     }
-    
-    public static String JsonResponse(String status, Object data, String message) throws JsonProcessingException {
-        Map<String, String> map = new HashMap<>();
+
+    public static ResponseEntity JsonResponse(Object status, Object data, Object message, HttpStatus httpStatus) throws JsonProcessingException {
+        Map<String, Object> map = new HashMap<>();
         ObjectMapper obj = new ObjectMapper();
         map.put("status", status);
-        map.put("data", obj.writeValueAsString(data));
+        map.put("data", data);
         map.put("message", message);
-        return obj.writeValueAsString(map);
+        if (httpStatus == null) {
+            httpStatus = HttpStatus.OK;
+        }
+        return new ResponseEntity(obj.writeValueAsString(map), httpStatus);
     }
-    
+
 }
