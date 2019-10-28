@@ -7,8 +7,6 @@ package com.example.hotCar.service;
 
 import com.example.hotCar.model.Users;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
 
 /**

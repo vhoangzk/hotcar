@@ -7,16 +7,10 @@ package com.example.hotCar.controller.api;
 
 import com.example.hotCar.model.Users;
 import com.example.hotCar.service.UserService;
-import com.example.hotCar.until.Contants;
-import com.example.hotCar.until.CustomResponse;
+import com.example.hotCar.until.Constants;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,56 +28,39 @@ import org.springframework.web.bind.annotation.RestController;
  * @author Lab06
  */
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/user")
 public class UserApiController {
 
+    HttpStatus returnStt = HttpStatus.OK;
     public static Logger logger = LoggerFactory.getLogger(UserApiController.class);
 
     @Autowired
     UserService userService;
 
     // -------------------Retrieve Single User------------------------------------------
-    @RequestMapping(value = "/user/login", method = RequestMethod.GET)
+    @RequestMapping(value = "/login", method = RequestMethod.GET)
     public ResponseEntity<Users> login(String email, String password) throws JsonProcessingException, NoSuchAlgorithmException, UnsupportedEncodingException {
         logger.info("Fetching User with id {}", email);
         Users user = userService.findByEmail(email);
-        ObjectMapper obj = new ObjectMapper();
-        HttpStatus returnStt = HttpStatus.OK;
-
-        Map<String, String> map = new HashMap<>();
-        Users data;
-        String status;
-        String message;
-
-        if (user != null) {
-            if (Contants.encryptMD5(password).equals(user.getPassword())) {
-                status = "SUCCESS";
-                data = user;
-                message = "OK";
-            } else {
-                status = "ERROR";
-                data = null;
-                message = "Sai mat khau";
-            }
+        String rtn;
+        if (user != null && Constants.encryptMD5(password).equals(user.getPassword())) {
+            rtn = Constants.JsonResponse("SUCCESS", user, "OK");
         } else {
-            status = "ERROR";
-            data = null;
-            message = "Khong tim thay";
-            returnStt = HttpStatus.BAD_REQUEST;
+            rtn = Constants.JsonResponse("SUCCESS", null, "Sai tên đăng nhập hoặc mật khẩu");
         }
-        map.put("status", status);
-        map.put("data", obj.writeValueAsString(data));
-        map.put("message", message);
-        return new ResponseEntity(obj.writeValueAsString(map), returnStt);
+        return new ResponseEntity(rtn, returnStt);
     }
 
-    @RequestMapping(value = "/contact", method = RequestMethod.GET)
-    public ResponseEntity<List<Users>> listAll() {
-        List<Users> listContact = userService.findAll();
-        if (listContact.isEmpty()) {
-            return new ResponseEntity(HttpStatus.NO_CONTENT);
+    @RequestMapping(value = "/create", method = RequestMethod.GET)
+    public ResponseEntity<Users> createNew(String email, String password) throws JsonProcessingException {
+        Users checkExist = userService.findByEmail(email);
+        if (checkExist != null) {
+            return new ResponseEntity(Constants.JsonResponse("ERROR", null, "Email đã tồn tại"), returnStt);
+        } else {
+            Users u = new Users();
+            userService.save(u);
+            return new ResponseEntity(Constants.JsonResponse("SUCCESS", null, "OK"), returnStt);
         }
-        return new ResponseEntity<>(listContact, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/contact/id", method = RequestMethod.GET)
