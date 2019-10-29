@@ -7,13 +7,20 @@ package com.example.hotCar.until;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.File;
+import java.io.IOException;
 import java.math.BigInteger;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  *
@@ -54,4 +61,17 @@ public class Constants {
         return new ResponseEntity(obj.writeValueAsString(map), httpStatus);
     }
 
+    public static String uploadFile(MultipartFile image) throws IOException {
+        String uploadRootPath = System.getProperty("user.dir") + File.separator + "uploads";
+            File uploadRootDir = new File(uploadRootPath);
+            if (!uploadRootDir.exists()) {
+                uploadRootDir.mkdirs();
+            }
+            String filename = StringUtils.cleanPath(image.getOriginalFilename());
+            byte[] bytes = image.getBytes();
+            Path path = Paths.get(uploadRootPath + File.separator +  image.getOriginalFilename());
+            Files.write(path, bytes);
+            
+            return filename;
+    }
 }

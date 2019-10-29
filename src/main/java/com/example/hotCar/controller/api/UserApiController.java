@@ -5,24 +5,37 @@
  */
 package com.example.hotCar.controller.api;
 
+import com.example.hotCar.impl.CustomImpl;
+import com.example.hotCar.model.LoginToken;
 import com.example.hotCar.model.Users;
+import com.example.hotCar.service.CustomService;
+import com.example.hotCar.service.LoginTokenService;
 import com.example.hotCar.service.UserService;
 import com.example.hotCar.until.Constants;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import java.io.File;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  *
@@ -37,16 +50,20 @@ public class UserApiController {
 
     @Autowired
     UserService userService;
+    CustomService cusService = new CustomImpl();
+    LoginTokenService tokenService;
+    
 
     // -------------------Retrieve Single User------------------------------------------
     @RequestMapping(value = "/login", method = RequestMethod.GET)
-    public ResponseEntity<Users> login(String email, String password, String gcm_id, String ime) throws JsonProcessingException, NoSuchAlgorithmException, UnsupportedEncodingException {
+    public ResponseEntity<Users> login(String email, String password, String gcm_id) throws JsonProcessingException, NoSuchAlgorithmException, UnsupportedEncodingException {
         ResponseEntity rtn;
         if (email.length() == 0 || password.length() == 0) {
             return Constants.JsonResponse(Constants.ERROR, null, "Missing param", null);
         }
         Users user = userService.findByEmail(email);
         if (user != null && Constants.encryptMD5(password).equals(user.getPassword())) {
+            cusService.insertToken(user.getId(), gcm_id);
             rtn = Constants.JsonResponse(Constants.SUCCESS, user, "OK", null);
         } else {
             rtn = Constants.JsonResponse(Constants.ERROR, null, "Sai tên đăng nhập hoặc mật khẩu", null);
@@ -54,10 +71,13 @@ public class UserApiController {
         return rtn;
     }
 
-    @RequestMapping(value = "/register", method = RequestMethod.GET)
-    public ResponseEntity<Users> createNew(String name, Integer gender, String email, String phone, String password) throws JsonProcessingException {
+    @RequestMapping(value = "/register", method = RequestMethod.POST)
+    public ResponseEntity<Users> createNew(HttpServletRequest request, @RequestParam String name, Integer gender, String email, String phone, String password, MultipartFile image, String gcm_id) throws JsonProcessingException, IOException {
         if (email.length() == 0 || password.length() == 0) {
             return Constants.JsonResponse(Constants.ERROR, null, "Missing param", null);
+        }
+        if (image.isEmpty()) {
+            return Constants.JsonResponse(Constants.ERROR, null, "Please select image", null);
         }
         Users checkExist = userService.findByEmail(email);
         if (checkExist != null) {
@@ -65,19 +85,22 @@ public class UserApiController {
         } else {
             Users u = new Users();
             Date d = new Date();
-            long time = d.getTime()/1000;
-            
+            long time = d.getTime() / 1000;
+            String filename = Constants.uploadFile(image);
+
             u.setEmail(email);
             u.setPassword(Constants.encryptMD5(password));
             u.setFullName(name);
             u.setDateCreated((int) time);
-            u.setImage("a");
+            u.setImage(filename);
             u.setGender(gender);
             u.setPhone(phone);
-            u.setStatus(1);
-            
+            u.setStatus(Constants.STT_ACTIVE);
+            LoginToken log = cusService.insertToken(u.getId(), gcm_id);
+            tokenService.save(log);
             userService.save(u);
             return Constants.JsonResponse(Constants.SUCCESS, u, "OK", null);
+
         }
     }
 

@@ -20,7 +20,7 @@ public class LoginToken implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
-    private Integer user_id;
+    private Integer userId;
     
     private String token;
     private Integer time;
@@ -28,18 +28,18 @@ public class LoginToken implements Serializable {
     public LoginToken() {
     }
 
-    public LoginToken(Integer user_id, String token, Integer time) {
-        this.user_id = user_id;
+    public LoginToken(Integer userId, String token, Integer time) {
+        this.userId = userId;
         this.token = token;
         this.time = time;
     }
 
     public Integer getUser_id() {
-        return user_id;
+        return userId;
     }
 
-    public void setUser_id(Integer user_id) {
-        this.user_id = user_id;
+    public void setUser_id(Integer userId) {
+        this.userId = userId;
     }
 
     public String getToken() {

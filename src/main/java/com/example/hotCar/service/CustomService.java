@@ -6,12 +6,11 @@
 package com.example.hotCar.service;
 
 import com.example.hotCar.model.LoginToken;
-import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
  *
- * @author Lab06
+ * @author Admin
  */
-public interface LoginTokenService extends JpaRepository<LoginToken, Integer>{
-    public LoginToken findByUserId(Integer userId);
+public interface CustomService {
+    public LoginToken insertToken(Integer userId, String gcm_id);
 }
