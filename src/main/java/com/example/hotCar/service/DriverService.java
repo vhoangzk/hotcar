@@ -13,5 +13,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @author Lab06
  */
 public interface DriverService extends JpaRepository<Driver, Integer>{
-    
+    public Driver findByuserId(Integer id);
 }
