@@ -14,12 +14,12 @@ import org.springframework.stereotype.Repository;
  * @author Lab06
  */
 @Repository
-public interface UserService extends JpaRepository<Users, Integer>{
-    
+public interface UserService extends JpaRepository<Users, Integer> {
+
     public Users findByEmail(String email);
-    
+
     public Users findByPhone(String phone);
-    
+
     public Users findByFullName(String name);
-    
+
 }

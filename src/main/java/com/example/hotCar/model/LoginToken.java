@@ -5,6 +5,7 @@
  */
 package com.example.hotCar.model;
 
+import com.example.hotCar.until.Constants;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.Serializable;
 import javax.persistence.*;
@@ -33,6 +34,13 @@ public class LoginToken implements Serializable {
         this.token = token;
         this.time = time;
     }
+
+    public LoginToken(Integer userId, String token) {
+        this.userId = userId;
+        this.token = token;
+        this.time = (int) Constants.getTimeStamp();
+    }
+    
 
     public Integer getUser_id() {
         return userId;

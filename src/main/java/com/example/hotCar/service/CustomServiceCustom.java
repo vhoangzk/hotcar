@@ -5,12 +5,11 @@
  */
 package com.example.hotCar.service;
 
-import com.example.hotCar.model.LoginToken;
 
 /**
  *
  * @author Admin
  */
-public interface CustomService {
-    public LoginToken insertToken(Integer userId, String gcm_id);
+public interface CustomServiceCustom {
+    void insertToken(Integer userId, String gcm_id);
 }

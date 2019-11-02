@@ -15,6 +15,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import org.springframework.http.HttpStatus;
@@ -73,5 +74,11 @@ public class Constants {
             Files.write(path, bytes);
             
             return filename;
+    }
+    
+    public static Integer getTimeStamp(){
+        Date d = new Date();
+        long t = d.getTime() / 1000;
+        return (int) t;
     }
 }

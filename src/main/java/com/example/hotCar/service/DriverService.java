@@ -7,11 +7,13 @@ package com.example.hotCar.service;
 
 import com.example.hotCar.model.Driver;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Service;
 
 /**
  *
  * @author Lab06
  */
+@Service
 public interface DriverService extends JpaRepository<Driver, Integer>{
-    
+    public Driver findByuserId(Integer id);
 }
