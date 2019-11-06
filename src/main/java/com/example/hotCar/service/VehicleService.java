@@ -13,5 +13,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @author Lab06
  */
 public interface VehicleService extends JpaRepository<Vehicle, Integer>{
-    
+    Vehicle findByuserId(Integer id);
 }

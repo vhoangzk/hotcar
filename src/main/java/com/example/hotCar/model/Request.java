@@ -38,6 +38,21 @@ public class Request implements Serializable {
     public Request() {
     }
 
+    public Request(Integer passengerId, Integer driverId, Integer vehicleType, String startLat, String startLong, String startLocation, String endLat, String endLong, String endLocation, Double estimateDistance, String estimateFare) {
+        this.passengerId = passengerId;
+        this.driverId = driverId;
+        this.vehicleType = vehicleType;
+        this.startLat = startLat;
+        this.startLong = startLong;
+        this.startLocation = startLocation;
+        this.endLat = endLat;
+        this.endLong = endLong;
+        this.endLocation = endLocation;
+        this.estimateDistance = estimateDistance;
+        this.estimateFare = estimateFare;
+    }
+
+    
     public Request(Integer id, Integer passengerId, Integer driverId, Integer vehicleType, String startLat, String startLong, String startLocation, String endLat, String endLong, String endLocation, Double estimateDistance, String estimateFare) {
         this.id = id;
         this.passengerId = passengerId;

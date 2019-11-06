@@ -25,7 +25,8 @@ target/
 /dist/
 /nbdist/
 /.nb-gradle/
-/uploads
+/uploads/*
+!/uploads/defaultAvatar.png
 build/
 
 ### VS Code ###

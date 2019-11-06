@@ -21,19 +21,47 @@ public class Driver implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     private Integer userId;
-    
+
     private Integer isOnline;
     private Integer rate;
-    private Double rateCount;
+    private Integer rateCount;
+    private Integer driverType;
+    private String latitude;
+    private String longitude;
+
+    public Integer getDriverType() {
+        return driverType;
+    }
+
+    public void setDriverType(Integer driverType) {
+        this.driverType = driverType;
+    }
+
+    public String getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(String latitude) {
+        this.latitude = latitude;
+    }
+
+    public String getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(String longitude) {
+        this.longitude = longitude;
+    }
 
     public Driver() {
     }
 
-    public Driver(Integer userId, Integer isOnline, Integer rate, Double rateCount) {
+    public Driver(Integer userId, Integer isOnline, Integer rate, Integer rateCount, Integer driverType) {
         this.userId = userId;
         this.isOnline = isOnline;
         this.rate = rate;
         this.rateCount = rateCount;
+        this.driverType = driverType;
     }
 
     public Integer getUserId() {
@@ -60,12 +88,12 @@ public class Driver implements Serializable {
         this.rate = rate;
     }
 
-    public Double getRateCount() {
+    public Integer getRateCount() {
         return rateCount;
     }
 
-    public void setRateCount(Double rateCount) {
+    public void setRateCount(Integer rateCount) {
         this.rateCount = rateCount;
     }
-    
+
 }

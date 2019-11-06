@@ -6,6 +6,7 @@
 package com.example.hotCar.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import java.io.File;
 import java.io.Serializable;
 import javax.persistence.*;
 
@@ -21,7 +22,7 @@ public class Vehicle implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     private Integer userId;
-    
+
     private String carPlate;
     private String model;
     private Integer type;
@@ -29,11 +30,20 @@ public class Vehicle implements Serializable {
     private String document;
     private Integer dateCreated;
     private String image;
+    private String image2;
+
+    public String getImage2() {
+        return image2;
+    }
+
+    public void setImage2(String image2) {
+        this.image2 = image2;
+    }
 
     public Vehicle() {
     }
 
-    public Vehicle(Integer userId, String carPlate, String model, Integer type, Integer status, String document, Integer dateCreated, String image) {
+    public Vehicle(Integer userId, String carPlate, String model, Integer type, Integer status, String document, Integer dateCreated, String image, String image2) {
         this.userId = userId;
         this.carPlate = carPlate;
         this.model = model;
@@ -42,6 +52,7 @@ public class Vehicle implements Serializable {
         this.document = document;
         this.dateCreated = dateCreated;
         this.image = image;
+        this.image2 = image2;
     }
 
     public Integer getUserId() {
@@ -106,5 +117,16 @@ public class Vehicle implements Serializable {
 
     public void setImage(String image) {
         this.image = image;
+    }
+    
+    public String getLinkImage() {
+        String link;
+        link = System.getProperty("user.dir") + File.separator + "uploads" + File.separator + this.image;
+        File file = new File(link);
+        if (!file.exists()) {
+            return System.getProperty("user.dir") + File.separator + "uploads" + File.separator + "defaultAvatar.jpg";
+        } else {
+            return link;
+        }
     }
 }

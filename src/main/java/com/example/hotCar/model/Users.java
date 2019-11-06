@@ -6,6 +6,7 @@
 package com.example.hotCar.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import java.io.File;
 import java.io.Serializable;
 import javax.persistence.*;
 
@@ -22,7 +23,7 @@ public class Users implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    
+
     private String fullName;
     private String image;
     private String email;
@@ -31,6 +32,8 @@ public class Users implements Serializable {
     private String phone;
     private Integer status;
     private Integer dateCreated;
+    private Double rate;
+    private Integer rateCount;
 
     public Users() {
     }
@@ -40,7 +43,6 @@ public class Users implements Serializable {
         this.password = password;
     }
 
-    
     public Users(Integer id) {
         this.id = id;
     }
@@ -128,10 +130,31 @@ public class Users implements Serializable {
     public void setDateCreated(Integer dateCreated) {
         this.dateCreated = dateCreated;
     }
-    
-    
-    
-    
-    
-    
+
+    public Double getRate() {
+        return rate;
+    }
+
+    public void setRate(Double rate) {
+        this.rate = rate;
+    }
+
+    public Integer getRateCount() {
+        return rateCount;
+    }
+
+    public void setRateCount(Integer rateCount) {
+        this.rateCount = rateCount;
+    }
+
+    public String getLinkImage() {
+        String link;
+        link = System.getProperty("user.dir") + File.separator + "uploads" + File.separator + this.image;
+        File file = new File(link);
+        if (!file.exists()) {
+            return System.getProperty("user.dir") + File.separator + "uploads" + File.separator + "defaultAvatar.png";
+        } else {
+            return link;
+        }
+    }
 }
