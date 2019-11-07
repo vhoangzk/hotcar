@@ -59,22 +59,10 @@ public class RequestApiController {
 
     @RequestMapping(value = "/showMyRequest", method = RequestMethod.GET)
     public ResponseEntity showMyRequest(String token) throws JsonProcessingException, Exception {
-        JSONObject j = new JSONObject();
-        j.put("data", new ArrayList<>());
-        j.put("action", 1);
-        j.put("body", "test");
         ArrayList<String> key = new ArrayList<>();
         key.add("efVciM4sTl4:APA91bHG9yTn2eMe3fgyOkcG-KqHc3BPNvWKhkuKH90lLNtfcLMNxgoMzXoFFpU-it01So55jYjKQlx6BzOjt2i-12mm9T1ltEARQO7xnHRnLjShs5_RA8J6cXhnahnBOQYUvwz74h9J");
-        key.add("efVciM4sTl4:APA91bHG9yTn2eMe3fgyOkcG-KqHc3BPNvWKhkuKH90lLNtfcLMNxgoMzXoFFpU-it01So55jYjKQlx6BzOjt2i-12mm9T1ltEARQO7xnHRnLjShs5_RA8J6cXhnahnBOQYUvwz74h9J");
         key.add("e3zDkKbzxCg:APA91bHrGxE8nv3b0GqJsMKGj9evDAnHAht8YtgBOG04TtQSbll7_iA1iyJvo1CZvK79ZiX-DsqWfBHM_9jJXLF4pqTdDnf_UCVproJ0liUQTHEgHksr1fPzMo7JhlYx3lCQP1eeBuz2");
-        key.add("e3zDkKbzxCg:APA91bHrGxE8nv3b0GqJsMKGj9evDAnHAht8YtgBOG04TtQSbll7_iA1iyJvo1CZvK79ZiX-DsqWfBHM_9jJXLF4pqTdDnf_UCVproJ0liUQTHEgHksr1fPzMo7JhlYx3lCQP1eeBuz2");
-        key.forEach((n) -> {
-            try {
-                FCMNotification.pushFCMNotification(n, j);
-            } catch (Exception ex) {
-                Logger.getLogger(RequestApiController.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        });
+        FCMNotification.push(new ArrayList(), 1, "Hello anh em", key);
         return Constants.JsonResponse(Constants.SUCCESS, 0, "OK", null);
     }
 

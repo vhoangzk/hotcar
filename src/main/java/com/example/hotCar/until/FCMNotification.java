@@ -5,6 +5,7 @@
  */
 package com.example.hotCar.until;
 
+import com.example.hotCar.controller.api.RequestApiController;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -44,11 +45,12 @@ public class FCMNotification {
 
         JSONObject data = new JSONObject();
 
-        JSONObject info = new JSONObject();
-        info.put("title", "FCM Notificatoin Title"); // Notification title
-        info.put("text", "Hello First Test notification"); // Notification body
-        info.put("data", ob); // Notification body
-        data.put("notification", info);
+//        JSONObject info = new JSONObject();
+//        info.put("title", "FCM Notificatoin Title"); // Notification title
+//        info.put("text", "Hello First Test notification"); // Notification body
+//        info.put("data", ob); // Notification body
+//        data.put("registration_ids", DeviceIdKey);
+        data.put("notification", ob);
         data.put("to", DeviceIdKey);
         OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
         wr.write(data.toString());
@@ -63,5 +65,21 @@ public class FCMNotification {
             response.append(inputLine);
         }
         in.close();
+    }
+    
+    public static void push(ArrayList arr, Integer action, String message, ArrayList<String> key){
+        JSONObject j = new JSONObject();
+        j.put("data", arr);
+        j.put("action", action);
+        j.put("body", message);
+        if (!key.isEmpty()) {
+            key.forEach((n) -> {
+            try {
+                FCMNotification.pushFCMNotification(n, j);
+            } catch (Exception ex) {
+                Logger.getLogger(RequestApiController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
+        }
     }
 }
