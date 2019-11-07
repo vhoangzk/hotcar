@@ -18,6 +18,7 @@ import com.example.hotCar.service.TripService;
 import com.example.hotCar.service.UserService;
 import com.example.hotCar.service.VehicleService;
 import com.example.hotCar.until.Constants;
+import com.example.hotCar.until.FCMNotification;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
@@ -25,6 +26,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -54,7 +58,23 @@ public class RequestApiController {
     RequestService rSer;
 
     @RequestMapping(value = "/showMyRequest", method = RequestMethod.GET)
-    public ResponseEntity showMyRequest(String token) throws JsonProcessingException {
+    public ResponseEntity showMyRequest(String token) throws JsonProcessingException, Exception {
+        JSONObject j = new JSONObject();
+        j.put("data", new ArrayList<>());
+        j.put("action", 1);
+        j.put("body", "test");
+        ArrayList<String> key = new ArrayList<>();
+        key.add("efVciM4sTl4:APA91bHG9yTn2eMe3fgyOkcG-KqHc3BPNvWKhkuKH90lLNtfcLMNxgoMzXoFFpU-it01So55jYjKQlx6BzOjt2i-12mm9T1ltEARQO7xnHRnLjShs5_RA8J6cXhnahnBOQYUvwz74h9J");
+        key.add("efVciM4sTl4:APA91bHG9yTn2eMe3fgyOkcG-KqHc3BPNvWKhkuKH90lLNtfcLMNxgoMzXoFFpU-it01So55jYjKQlx6BzOjt2i-12mm9T1ltEARQO7xnHRnLjShs5_RA8J6cXhnahnBOQYUvwz74h9J");
+        key.add("e3zDkKbzxCg:APA91bHrGxE8nv3b0GqJsMKGj9evDAnHAht8YtgBOG04TtQSbll7_iA1iyJvo1CZvK79ZiX-DsqWfBHM_9jJXLF4pqTdDnf_UCVproJ0liUQTHEgHksr1fPzMo7JhlYx3lCQP1eeBuz2");
+        key.add("e3zDkKbzxCg:APA91bHrGxE8nv3b0GqJsMKGj9evDAnHAht8YtgBOG04TtQSbll7_iA1iyJvo1CZvK79ZiX-DsqWfBHM_9jJXLF4pqTdDnf_UCVproJ0liUQTHEgHksr1fPzMo7JhlYx3lCQP1eeBuz2");
+        key.forEach((n) -> {
+            try {
+                FCMNotification.pushFCMNotification(n, j);
+            } catch (Exception ex) {
+                Logger.getLogger(RequestApiController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
         return Constants.JsonResponse(Constants.SUCCESS, 0, "OK", null);
     }
 

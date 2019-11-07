@@ -6,21 +6,27 @@
 package com.example.hotCar.until;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.json.JSONObject;
 
 /**
  *
  * @author Admin
  */
 public class FCMNotification {
+
     // Method to send Notifications from server to client end.
-    public final static String AUTH_KEY_FCM = "API_KEY_HERE";
+    public final static String AUTH_KEY_FCM = "AAAAaAYV4R0:APA91bHejwPVCIIXjC5BfxelyeO37lL5bmZDtn3j6WHNJCgDr6WpguktkfS1Yy9QDMQrJN3pPtHxfuYSyE0p8ocQ4kYE_ZHZey84_8SHQH72jj7qH1rf6-SGTK0eX7z8o2YPRyuaFILE";
     public final static String API_URL_FCM = "https://fcm.googleapis.com/fcm/send";
 
-    public static void pushFCMNotification(String DeviceIdKey) throws Exception {
+    public static void pushFCMNotification(String DeviceIdKey, Object ob) throws Exception, IOException {
 
         String authKey = AUTH_KEY_FCM; // You FCM AUTH key
         String FMCurl = API_URL_FCM;
@@ -36,34 +42,26 @@ public class FCMNotification {
         conn.setRequestProperty("Authorization", "key=" + authKey);
         conn.setRequestProperty("Content-Type", "application/json");
 
-//        JSONObject data = new JSONObject();
-//        data.put("to", DeviceIdKey.trim());
-//        JSONObject info = new JSONObject();
-//        info.put("title", "FCM Notificatoin Title"); // Notification title
-//        info.put("text", "Hello First Test notification"); // Notification body
-//        data.put("notification", info);
-//
-//        OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
-//        wr.write(data.toString());
-//        wr.flush();
-//        wr.close();
-//
-//        int responseCode = conn.getResponseCode();
-//        System.out.println("Response Code : " + responseCode);
-//
-//        BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-//        String inputLine;
-//        StringBuffer response = new StringBuffer();
-//
-//        while ((inputLine = in.readLine()) != null) {
-//            response.append(inputLine);
-//        }
-//        in.close();
+        JSONObject data = new JSONObject();
 
-    }
+        JSONObject info = new JSONObject();
+        info.put("title", "FCM Notificatoin Title"); // Notification title
+        info.put("text", "Hello First Test notification"); // Notification body
+        info.put("data", ob); // Notification body
+        data.put("notification", info);
+        data.put("to", DeviceIdKey);
+        OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
+        wr.write(data.toString());
+        wr.flush();
+        wr.close();
 
-    @SuppressWarnings("static-access")
-    public static void main(String[] args) throws Exception {
-        FCMNotification.pushFCMNotification("USER_DEVICE_TOKEN");
+        BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+        String inputLine;
+        StringBuffer response = new StringBuffer();
+
+        while ((inputLine = in.readLine()) != null) {
+            response.append(inputLine);
+        }
+        in.close();
     }
 }
