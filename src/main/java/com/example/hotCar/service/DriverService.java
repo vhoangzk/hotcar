@@ -20,7 +20,7 @@ import org.springframework.stereotype.Service;
 public interface DriverService extends JpaRepository<Driver, Integer>{
     public Driver findByuserId(Integer id);
     
-    public ArrayList<Driver> findByisOnlineAndDriverType(Integer online, Integer type);
+    public ArrayList<Driver> findByisOnlineAndDriverTypeAndIsBusy(Integer online, Integer type, Integer isBusy);
     
     @Query("SELECT d FROM Driver d WHERE d.isOnline = 1")
     public ArrayList<Driver> findOnlineDriver(Sort sort);

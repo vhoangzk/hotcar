@@ -37,6 +37,19 @@ public class Constants {
     public static Integer STT_INACTIVE = 2;
     public static Integer AMOUNT_PER_KILOMETER = 10000;
     public static Integer DISTANCE_TO_FIND = 1;
+    
+    public static Integer TRIP_STATUS_COMING_A = 1;
+    public static Integer TRIP_STATUS_COMING_B = 2;
+    public static Integer TRIP_STATUS_PENDING_PAYMENT = 3;
+    public static Integer TRIP_STATUS_FINISH = 4;
+    public static Integer TRIP_STATUS_ARRIVED_A = 5;
+    public static Integer TRIP_STATUS_ARRIVED_B = 6;
+    
+    public static Integer DRIVER_BUSY = 1;
+    public static Integer DRIVER_IDLE = 0;
+    
+    public static Integer DRIVER_ONLINE = 1;
+    public static Integer DRIVER_OFFLINE = 0;
 
     public static String encryptMD5(String input) {
         try {

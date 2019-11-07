@@ -23,6 +23,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -70,16 +72,15 @@ public class RequestApiController {
 
         LoginToken l = log.findByToken(token);
         Users p = user.findById(l.getUser_id()).get();
-//        Vehicle v = vSer.findById(linkType).get();
-//        Driver d = driverSer.findByuserId(v.getUserId());
-        ArrayList<Driver> onlineD = driverSer.findByisOnlineAndDriverType(1, linkType);
+        ArrayList<Driver> onlineD = driverSer.findByisOnlineAndDriverTypeAndIsBusy(1, linkType, Constants.DRIVER_IDLE);
 
         Double distance = Constants.distance(startLat, startLong, endLat, endLong, "K");
         Double estimateFare = Constants.estimateFare(distance);
+        int[] count = new int[]{0};
         if (onlineD.size() > 0) {
             onlineD.forEach((d) -> {
                 Double dDist = Constants.distance(Double.valueOf(d.getLatitude()), Double.valueOf(d.getLongitude()), startLat, startLong, "K");
-                if (dDist < Constants.DISTANCE_TO_FIND) {
+                if (dDist < Constants.DISTANCE_TO_FIND && !Objects.equals(d.getUserId(), l.getUser_id())) {
                     Request r = new Request(
                             p.getId(),
                             d.getUserId(),
@@ -94,8 +95,10 @@ public class RequestApiController {
                             String.valueOf(estimateFare)
                     );
                     rSer.save(r);
+                    count[0]++;
+                    System.out.println(dDist);
+                    System.out.println(count[0]);
                 }
-                
                 //push notification
             });
         }
@@ -104,13 +107,18 @@ public class RequestApiController {
         map.put("status", Constants.SUCCESS);
         map.put("data", "");
         map.put("estimate_fare", estimateFare);
-        map.put("count", 1);
+        map.put("count", count[0]);
         map.put("message", "OK");
         return new ResponseEntity(obj.writeValueAsString(map), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/cancelRequest", method = RequestMethod.GET)
+    @RequestMapping(value = "/cancelRequest", method = RequestMethod.POST)
     public ResponseEntity cancelRequest(String token) throws JsonProcessingException {
-        return Constants.JsonResponse(Constants.SUCCESS, 0, "OK", null);
+        LoginToken l = log.findByToken(token);
+        Users p = user.findById(l.getUser_id()).get();
+
+        rSer.deleteAllBypassengerId(p.getId());
+
+        return Constants.JsonResponse(Constants.SUCCESS, "", "OK", null);
     }
 }

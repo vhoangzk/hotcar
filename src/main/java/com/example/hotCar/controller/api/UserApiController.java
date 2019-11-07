@@ -254,7 +254,7 @@ public class UserApiController {
         String image2 = Constants.uploadFile(imageExtra2);
         Vehicle newV = new Vehicle(u.getId(), vehiclePlate, "2019", vehicleType, 1, "", Constants.getTimeStamp(), image, image2);
         vehicleService.save(newV);
-        Driver newD = new Driver(u.getId(), 1, 0, 0, driverType);
+        Driver newD = new Driver(u.getId(), Constants.DRIVER_OFFLINE, Constants.DRIVER_IDLE, 0, 0, driverType);
         driverService.save(newD);
         
         Map<String, Object> map = new HashMap<>();

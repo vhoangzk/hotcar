@@ -23,6 +23,15 @@ public class Driver implements Serializable {
     private Integer userId;
 
     private Integer isOnline;
+    private Integer isBusy;
+
+    public Integer getIsBusy() {
+        return isBusy;
+    }
+
+    public void setIsBusy(Integer isBusy) {
+        this.isBusy = isBusy;
+    }
     private Integer rate;
     private Integer rateCount;
     private Integer driverType;
@@ -56,9 +65,10 @@ public class Driver implements Serializable {
     public Driver() {
     }
 
-    public Driver(Integer userId, Integer isOnline, Integer rate, Integer rateCount, Integer driverType) {
+    public Driver(Integer userId, Integer isOnline, Integer isBusy, Integer rate, Integer rateCount, Integer driverType) {
         this.userId = userId;
         this.isOnline = isOnline;
+        this.isBusy = isBusy;
         this.rate = rate;
         this.rateCount = rateCount;
         this.driverType = driverType;
