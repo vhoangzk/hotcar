@@ -20,6 +20,7 @@ import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,18 +37,19 @@ public class Constants {
     public static Integer STT_ACTIVE = 1;
     public static Integer STT_INACTIVE = 2;
     public static Integer AMOUNT_PER_KILOMETER = 10000;
-    public static Integer DISTANCE_TO_FIND = 1;
-    
-    public static Integer TRIP_STATUS_COMING_A = 1;
-    public static Integer TRIP_STATUS_COMING_B = 2;
-    public static Integer TRIP_STATUS_PENDING_PAYMENT = 3;
-    public static Integer TRIP_STATUS_FINISH = 4;
-    public static Integer TRIP_STATUS_ARRIVED_A = 5;
-    public static Integer TRIP_STATUS_ARRIVED_B = 6;
-    
-    public static Integer DRIVER_BUSY = 1;
-    public static Integer DRIVER_IDLE = 0;
-    
+    public static Integer DISTANCE_TO_FIND = 2;
+
+    public static final int TRIP_STATUS_APPROACHING = 1;
+    public static final int TRIP_STATUS_INPROGRESS = 2;
+    public static final int TRIP_STATUS_PENDING_PAYMENT = 3;
+    public static final int TRIP_STATUS_FINISH = 4;
+    public static final int TRIP_STATUS_ARRIVED_A = 6;
+    public static final int TRIP_STATUS_ARRIVED_B = 7;
+    public static final int TRIP_STATUS_START_TASK = 8;
+
+    public static Integer DRIVER_BUSY = 0;
+    public static Integer DRIVER_IDLE = 1;
+
     public static Integer DRIVER_ONLINE = 1;
     public static Integer DRIVER_OFFLINE = 0;
 
@@ -106,9 +108,16 @@ public class Constants {
             return (double) AMOUNT_PER_KILOMETER;
         } else {
             Double estimate = distance * AMOUNT_PER_KILOMETER;
-            return estimate;
+            return formatNumber(estimate);
         }
 
+    }
+
+    public static Double formatNumber(Double number) {
+        DecimalFormat df = new DecimalFormat("#.##");
+        df.setRoundingMode(RoundingMode.CEILING);
+        Double rtn = Double.valueOf(df.format(number));
+        return (rtn);
     }
 
     public static double distance(double lat1, double lon1, double lat2, double lon2, String unit) {
@@ -130,5 +139,20 @@ public class Constants {
             Double rtn = Double.valueOf(df.format(dist));
             return (rtn);
         }
+    }
+
+    public static String generateString(Integer length) {
+        int leftLimit = 97; // letter 'a'
+        int rightLimit = 122; // letter 'z'
+        int targetStringLength = length;
+        Random random = new Random();
+        StringBuilder buffer = new StringBuilder(targetStringLength);
+        for (int i = 0; i < targetStringLength; i++) {
+            int randomLimitedInt = leftLimit + (int) (random.nextFloat() * (rightLimit - leftLimit + 1));
+            buffer.append((char) randomLimitedInt);
+        }
+        String generatedString = buffer.toString();
+
+        return generatedString;
     }
 }

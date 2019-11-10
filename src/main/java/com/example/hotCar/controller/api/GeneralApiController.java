@@ -12,12 +12,15 @@ import com.example.hotCar.service.DriverService;
 import com.example.hotCar.service.TripService;
 import com.example.hotCar.service.UserService;
 import com.example.hotCar.until.Constants;
+import com.example.hotCar.until.FCMNotification;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,11 +40,11 @@ public class GeneralApiController {
 
     @Autowired
     UserService userService;
-    
+
     @Autowired
     DriverService driverService;
 
-    @RequestMapping(value = "/generalSettings", method = RequestMethod.GET)
+    @RequestMapping(value = "/generalSettings", method = RequestMethod.POST)
     public ResponseEntity generalSetting() throws JsonProcessingException {
         Map<String, Object> data = new HashMap<>();
         ArrayList arrListJob = new ArrayList();
@@ -112,7 +115,7 @@ public class GeneralApiController {
         return new ResponseEntity(obj.writeValueAsString(map), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/showDistance", method = RequestMethod.GET)
+    @RequestMapping(value = "/showDistance", method = RequestMethod.POST)
     public ResponseEntity showDistance(Integer tripId) throws JsonProcessingException {
         Trip t = tripService.findById(tripId).get();
         Users u = userService.findById(t.getPassengerId()).get();
@@ -122,7 +125,50 @@ public class GeneralApiController {
     }
 
     @RequestMapping(value = "/showListShopByCategory", method = RequestMethod.GET)
-    public ResponseEntity showListShopByCategory(String token) throws JsonProcessingException {
-        return Constants.JsonResponse(Constants.SUCCESS, 0, "OK", null);
+    public ResponseEntity showListShopByCategory(String token, Double startLat, Double startLong, Integer catId, Integer distance) throws JsonProcessingException {
+//        System.out.println("Distance: " + distance);
+        Integer dist = (distance == null) ? Constants.DISTANCE_TO_FIND : distance;
+        ArrayList<Driver> arrD = driverService.findOnlineDriver(new Sort(Sort.Direction.DESC, "userId"));
+        if (arrD.isEmpty()) {
+            return Constants.JsonResponse(Constants.SUCCESS, new ArrayList<>(), "OK", null);
+        }
+        ArrayList<Map> list = new ArrayList<>();
+        arrD.forEach((d) -> {
+            Double dDist = Constants.distance(Double.valueOf(d.getLatitude()), Double.valueOf(d.getLongitude()), startLat, startLong, "K");
+            if (dDist < dist) {
+                Users u = userService.findById(d.getUserId()).get();
+                Map<String, Object> data = new HashMap<>();
+                data.put("id", String.valueOf(u.getId()));
+                data.put("shopName", u.getFullName());
+                data.put("shopLat", d.getLatitude());
+                data.put("shopLong", d.getLongitude());
+                data.put("imgSelected", "http://bestapp.site/graduationproject/upload/job_type/motobike.png");
+                list.add(data);
+            }
+        });
+        return Constants.JsonResponse(Constants.SUCCESS, list, "OK", null);
+    }
+
+    @RequestMapping(value = "/getPrice", method = RequestMethod.GET)
+    public ResponseEntity getPrice(Double startLat, Double startLong, Double endLat, Double endLong) throws JsonProcessingException {
+        Double distance = Constants.distance(startLat, startLong, endLat, endLong, "K");
+        Double fare = Constants.estimateFare(distance);
+        Map<String, Object> data = new HashMap<>();
+        data.put("km", String.valueOf(distance));
+        data.put("price", String.valueOf(fare));
+        return Constants.JsonResponse(Constants.SUCCESS, data, "OK", null);
+    }
+
+    @RequestMapping(value = "/testPush", method = RequestMethod.GET)
+    public void testPush(String token) throws JsonProcessingException, Exception {
+//        JSONObject j = new JSONObject();
+//        j.put("data", new ArrayList());
+//        j.put("action", 1);
+//        j.put("body", "Hello anh em");
+//        FCMNotification.pushFCMNotification(token, j);
+        
+        ArrayList<String> key = new ArrayList<>();
+        key.add(token);
+        FCMNotification.push(new ArrayList(), "createRequest", "Alo alo", key);
     }
 }

@@ -5,6 +5,7 @@
  */
 package com.example.hotCar.model;
 
+import com.example.hotCar.until.Constants;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.Serializable;
 import javax.persistence.*;
@@ -24,6 +25,11 @@ public class Driver implements Serializable {
 
     private Integer isOnline;
     private Integer isBusy;
+    private Double rate;
+    private Integer rateCount;
+    private String driverType;
+    private String latitude;
+    private String longitude;
 
     public Integer getIsBusy() {
         return isBusy;
@@ -32,17 +38,11 @@ public class Driver implements Serializable {
     public void setIsBusy(Integer isBusy) {
         this.isBusy = isBusy;
     }
-    private Integer rate;
-    private Integer rateCount;
-    private Integer driverType;
-    private String latitude;
-    private String longitude;
-
-    public Integer getDriverType() {
+    public String getDriverType() {
         return driverType;
     }
 
-    public void setDriverType(Integer driverType) {
+    public void setDriverType(String driverType) {
         this.driverType = driverType;
     }
 
@@ -65,7 +65,7 @@ public class Driver implements Serializable {
     public Driver() {
     }
 
-    public Driver(Integer userId, Integer isOnline, Integer isBusy, Integer rate, Integer rateCount, Integer driverType) {
+    public Driver(Integer userId, Integer isOnline, Integer isBusy, Double rate, Integer rateCount, String driverType) {
         this.userId = userId;
         this.isOnline = isOnline;
         this.isBusy = isBusy;
@@ -90,11 +90,11 @@ public class Driver implements Serializable {
         this.isOnline = isOnline;
     }
 
-    public Integer getRate() {
-        return rate;
+    public Double getRate() {
+        return Constants.formatNumber(rate);
     }
 
-    public void setRate(Integer rate) {
+    public void setRate(Double rate) {
         this.rate = rate;
     }
 

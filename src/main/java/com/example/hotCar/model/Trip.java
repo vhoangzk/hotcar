@@ -28,7 +28,7 @@ public class Trip implements Serializable {
     private Integer vehicleType;
     private Integer startTime;
     private Integer endTime;
-    private Integer startLat;
+    private String startLat;
     private String startLong;
     private String startLocation;
     private String endLat;
@@ -44,7 +44,28 @@ public class Trip implements Serializable {
     public Trip() {
     }
 
-    public Trip(Integer id, Integer passengerId, Integer driverId, Integer vehicleType, Integer startTime, Integer endTime, Integer startLat, String startLong, String startLocation, String endLat, String endLong, String endLocation, String distance, Integer status, Double estimateFare, Double actualFare, Double driverRate, Double passengerRate) {
+    public Trip(Integer passengerId, Integer driverId, Integer vehicleType, Integer startTime, Integer endTime, String startLat, String startLong, String startLocation, String endLat, String endLong, String endLocation, String distance, Integer status, Double estimateFare, Double actualFare, Double driverRate, Double passengerRate) {
+        this.passengerId = passengerId;
+        this.driverId = driverId;
+        this.vehicleType = vehicleType;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.startLat = startLat;
+        this.startLong = startLong;
+        this.startLocation = startLocation;
+        this.endLat = endLat;
+        this.endLong = endLong;
+        this.endLocation = endLocation;
+        this.distance = distance;
+        this.status = status;
+        this.estimateFare = estimateFare;
+        this.actualFare = actualFare;
+        this.driverRate = driverRate;
+        this.passengerRate = passengerRate;
+    }
+    
+
+    public Trip(Integer id, Integer passengerId, Integer driverId, Integer vehicleType, Integer startTime, Integer endTime, String startLat, String startLong, String startLocation, String endLat, String endLong, String endLocation, String distance, Integer status, Double estimateFare, Double actualFare, Double driverRate, Double passengerRate) {
         this.id = id;
         this.passengerId = passengerId;
         this.driverId = driverId;
@@ -113,11 +134,11 @@ public class Trip implements Serializable {
         this.endTime = endTime;
     }
 
-    public Integer getStartLat() {
+    public String getStartLat() {
         return startLat;
     }
 
-    public void setStartLat(Integer startLat) {
+    public void setStartLat(String startLat) {
         this.startLat = startLat;
     }
 

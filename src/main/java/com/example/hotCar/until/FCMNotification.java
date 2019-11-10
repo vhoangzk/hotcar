@@ -27,7 +27,7 @@ public class FCMNotification {
     public final static String AUTH_KEY_FCM = "AAAAaAYV4R0:APA91bHejwPVCIIXjC5BfxelyeO37lL5bmZDtn3j6WHNJCgDr6WpguktkfS1Yy9QDMQrJN3pPtHxfuYSyE0p8ocQ4kYE_ZHZey84_8SHQH72jj7qH1rf6-SGTK0eX7z8o2YPRyuaFILE";
     public final static String API_URL_FCM = "https://fcm.googleapis.com/fcm/send";
 
-    public static void pushFCMNotification(String DeviceIdKey, Object ob) throws Exception, IOException {
+    public static void pushFCMNotification(String DeviceIdKey, JSONObject ob) throws Exception, IOException {
 
         String authKey = AUTH_KEY_FCM; // You FCM AUTH key
         String FMCurl = API_URL_FCM;
@@ -41,18 +41,12 @@ public class FCMNotification {
 
         conn.setRequestMethod("POST");
         conn.setRequestProperty("Authorization", "key=" + authKey);
-        conn.setRequestProperty("Content-Type", "application/json");
+        conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
 
         JSONObject data = new JSONObject();
-
-//        JSONObject info = new JSONObject();
-//        info.put("title", "FCM Notificatoin Title"); // Notification title
-//        info.put("text", "Hello First Test notification"); // Notification body
-//        info.put("data", ob); // Notification body
-//        data.put("registration_ids", DeviceIdKey);
-        data.put("notification", ob);
-        data.put("to", DeviceIdKey);
-        OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
+        data.put("data", ob);
+        data.put("to", DeviceIdKey.trim());
+        OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream(), "utf-8");
         wr.write(data.toString());
         wr.flush();
         wr.close();
@@ -65,15 +59,17 @@ public class FCMNotification {
             response.append(inputLine);
         }
         in.close();
+        System.out.println(ob.toString());
     }
     
-    public static void push(ArrayList arr, Integer action, String message, ArrayList<String> key){
+    public static void push(ArrayList arr, String action, String message, ArrayList<String> key){
         JSONObject j = new JSONObject();
         j.put("data", arr);
         j.put("action", action);
         j.put("body", message);
-        if (!key.isEmpty()) {
+        if (key.size() > 0) {
             key.forEach((n) -> {
+//                System.out.println(n);
             try {
                 FCMNotification.pushFCMNotification(n, j);
             } catch (Exception ex) {

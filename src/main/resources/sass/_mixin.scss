@@ -1,0 +1,94 @@
+//Sarabun regular
+@mixin ff-srr() {
+    font-family: 'Sarabun', sans-serif;
+    font-weight: 400;
+}
+
+@mixin ff-srr-normal() {
+    font-family: 'Sarabun', sans-serif;
+    font-weight: normal;
+}
+
+@mixin ff-srri-normal() {
+    font-family: 'Sarabun', sans-serif;
+    font-weight: normal;
+    font-style: italic;
+}
+
+@mixin ff-srri() {
+    font-family: 'Sarabun', sans-serif;
+    font-weight: 400;
+    font-style: italic;
+}
+
+@mixin ff-srm-600() {
+    font-family: 'Sarabun', sans-serif;
+    font-weight: 600;
+}
+
+
+@mixin ff-srmi-600() {
+    font-family: 'Sarabun', sans-serif;
+    font-weight: 600;
+    font-style: italic;
+}
+
+//Sarabun medium
+@mixin ff-srm() {
+    font-family: 'Sarabun', sans-serif;
+    font-weight: 500;
+}
+
+
+@mixin ff-srmi() {
+    font-family: 'Sarabun', sans-serif;
+    font-weight: 500;
+    font-style: italic;
+}
+
+//Sarabun bold
+@mixin ff-srb() {
+    font-family: 'Sarabun', sans-serif;
+    font-weight: 700;
+}
+
+@mixin ff-srbi() {
+    font-family: 'Sarabun', sans-serif;
+    font-weight: 700;
+    font-style: italic;
+}
+
+//Sarabun semi bold
+@mixin ff-srsb() {
+    font-family: 'Sarabun', sans-serif;
+    font-weight: 600;
+}
+
+@mixin ff-srsbi() {
+    font-family: 'Sarabun', sans-serif;
+    font-weight: 600;
+    font-style: italic;
+}
+
+//Sarabun light
+@mixin ff-srl() {
+    font-family: 'Sarabun', sans-serif;
+    font-weight: 300;
+}
+
+@mixin ff-srli() {
+    font-family: 'Sarabun', sans-serif;
+    font-weight: 300;
+    font-style: italic;
+}
+
+@mixin text-style($fs, $lh, $cl) {
+    font-size: $fs;
+    line-height: $lh;
+    color: $cl;
+}
+
+@mixin text-style-2($fs, $cl) {
+    font-size: $fs;
+    color: $cl;
+}

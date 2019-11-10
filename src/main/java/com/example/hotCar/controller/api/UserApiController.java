@@ -29,6 +29,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -56,10 +58,12 @@ public class UserApiController {
     DriverService driverService;
     @Autowired
     VehicleService vehicleService;
+    @Autowired
+    JavaMailSender mail;
 
     // -------------------Retrieve Single User------------------------------------------
-    @RequestMapping(value = "/loginNomal", method = RequestMethod.GET)
-    public ResponseEntity<Users> login(String email, String password, String gcm_id) throws JsonProcessingException, NoSuchAlgorithmException, UnsupportedEncodingException {
+    @RequestMapping(value = "/loginNormal", method = RequestMethod.GET)
+    public ResponseEntity loginNormal(String email, String password, String gcm_id) throws JsonProcessingException, NoSuchAlgorithmException, UnsupportedEncodingException {
         if (email.length() == 0 || password.length() == 0) {
             return Constants.JsonResponse(Constants.ERROR, "", "Missing param", null);
         }
@@ -85,6 +89,7 @@ public class UserApiController {
             m.put("isActive", 0);
             m.put("driverActive", 0);
             m.put("typeAccount", 0);
+            System.out.println("Login: " + u.getEmail());
             return Constants.JsonResponse(Constants.SUCCESS, m, "OK", null);
         } else {
             return Constants.JsonResponse(Constants.ERROR, "", "Sai tên đăng nhập hoặc mật khẩu", null);
@@ -118,13 +123,17 @@ public class UserApiController {
             u.setGender(1);
             u.setPhone(phone);
             u.setStatus(Constants.STT_ACTIVE);
+            u.setRate(10.0);
+            u.setRateCount(0);
+            u.setTypeTasker(3);
             userService.save(u);
+            System.out.println("Đăng ký OK");
             return Constants.JsonResponse(Constants.SUCCESS, "", "Đăng ký thành công", null);
 
         }
     }
 
-    @RequestMapping(value = "/showUserInfo", method = RequestMethod.GET)
+    @RequestMapping(value = "/showUserInfo", method = RequestMethod.POST)
     public ResponseEntity<Users> showUserInfo(String token) throws JsonProcessingException {
         if (token.equals("")) {
             return Constants.JsonResponse(Constants.ERROR, "", "Thiếu token", null);
@@ -135,70 +144,89 @@ public class UserApiController {
             } else {
                 Integer userId = log.getUser_id();
                 Users u = userService.findById(userId).get();
-                Driver d = driverService.findById(userId).get();
-                Vehicle v = vehicleService.findByuserId(userId);
+                Driver d;
+                if (driverService.findById(userId).isPresent()) {
+                    d = driverService.findById(userId).get();
+                } else {
+                    d = null;
+                }
+
                 Map<String, Object> m = new HashMap<>();
-                Map<String, Object> s = new HashMap<>();
-                Map<String, Object> c = new HashMap<>();
-                s.put("rate", d.getRate());
-                s.put("rateCount", d.getRateCount());
-                s.put("bankAccount", "");
-                s.put("status", "1");
-                s.put("updatePending", "1");
-                s.put("imageExtra", u.getLinkImage());
-                s.put("imageExtra2", u.getLinkImage());
-                s.put("isActive", "1");
-                s.put("lat", "-28.9323405");
-                s.put("long", "135.6806593");
-                s.put("driverRate", "0");
-                s.put("driverCount", "0");
-                s.put("isOnline", "1");
-                s.put("linkType", "0");
-                s.put("carPlate", "8888");
-                s.put("carType", "45");
 
-                c.put("id", "2");
-                c.put("vehiclePlate", "8888");
-                c.put("vehicleType", "45");
-                c.put("dateCreated", "2019");
-                c.put("image1", "");
-                c.put("image2", "");
+                if (d != null) {
+                    Map<String, Object> s = new HashMap<>();
+                    Map<String, Object> c = new HashMap<>();
+                    Vehicle v = vehicleService.findByuserId(userId);
+                    s.put("bankAccount", "");
+                    s.put("status", String.valueOf(d.getIsBusy()));
+                    s.put("updatePending", "0");
+                    s.put("imageExtra", u.getLinkImage());
+                    s.put("imageExtra2", u.getLinkImage());
+                    s.put("isActive", String.valueOf(u.getStatus()));
+                    s.put("lat", String.valueOf(d.getLatitude()));
+                    s.put("long", String.valueOf(d.getLongitude()));
+                    s.put("driverRate", String.valueOf(d.getRate()));
+                    s.put("driverRateCount", "0");
+                    s.put("isOnline", String.valueOf(d.getIsOnline()));
+                    s.put("linkType", "1");
+                    s.put("carPlate", "8888");
+                    s.put("carType", "1");
+                    s.put("vehiclePlate", v.getCarPlate());
+                    s.put("vehicleType", String.valueOf(v.getModel()));
 
-                m.put("id", u.getId());
+                    c.put("id", "2");
+                    c.put("vehiclePlate", v.getCarPlate());
+                    c.put("vehicleType", String.valueOf(v.getModel()));
+                    c.put("dateCreated", "2019");
+                    c.put("image1", "");
+                    c.put("image2", "");
+
+                    m.put("shop", s);
+                    m.put("car", c);
+                } else {
+                    m.put("shop", null);
+                    m.put("car", null);
+                }
+
+                m.put("id", String.valueOf(u.getId()));
                 m.put("fullName", u.getFullName());
                 m.put("image", u.getLinkImage());
                 m.put("email", u.getEmail());
                 m.put("description", "");
-                m.put("isActive", u.getStatus());
+                m.put("isActive", String.valueOf(u.getStatus()));
                 m.put("gender", null);
                 m.put("phone", u.getPhone());
                 m.put("dob", "");
-                m.put("adddress", "Ha Noi");
-                m.put("balance", "10000");
-                m.put("isOnline", u.getStatus());
-                m.put("passengerRate", "10");
-                m.put("passengerRateCount", "2");
+                m.put("address", "Ha Noi");
+                m.put("balance", "10000.0");
+                m.put("isOnline", String.valueOf(u.getStatus()));
+                m.put("rate", String.valueOf(u.getRate()));
+                m.put("rateCount", String.valueOf(u.getRateCount()));
+                m.put("passengerRate", String.valueOf(u.getRate()));
+                m.put("passengerRateCount", String.valueOf(u.getRateCount()));
                 m.put("stateId", "0");
                 m.put("stateName", "");
                 m.put("cityId", "");
                 m.put("cityName", "");
                 m.put("typeAccount", "0");
-                m.put("typeTasker", "1");
+                m.put("typeTasker", String.valueOf(u.getTypeTasker()));
                 m.put("account", "");
-                m.put("shop", s);
-                m.put("car", c);
+
                 return Constants.JsonResponse(Constants.SUCCESS, m, "OK", null);
             }
         }
     }
 
     @RequestMapping(value = "/online", method = RequestMethod.POST)
-    public ResponseEntity online(String token, String status) throws JsonProcessingException {
+    public ResponseEntity online(String token, String status, String lat,@RequestParam("long") String lon) throws JsonProcessingException {
         LoginToken log = logService.findByToken(token);
         Integer userId = log.getUser_id();
         Driver u = driverService.findByuserId(userId);
         u.setIsOnline(Integer.valueOf(status));
+        u.setLatitude(lat);
+        u.setLongitude(lon);
         driverService.save(u);
+        System.out.println("Online");
         return Constants.JsonResponse(Constants.SUCCESS, "", "OK", null);
     }
 
@@ -217,11 +245,12 @@ public class UserApiController {
 
     @RequestMapping(value = "/registerShop", method = RequestMethod.POST)
     public ResponseEntity<Users> registerShop(
+            HttpServletRequest req,
             String token,
             String fullName,
             String phone,
-            Integer vehicleType,
-            Integer driverType,
+            String vehicleType,
+            String driverType,
             String vehiclePlate,
             MultipartFile imageExtra,
             MultipartFile imageExtra2,
@@ -234,12 +263,6 @@ public class UserApiController {
         if (l == null) {
             return Constants.JsonResponse(Constants.ERROR, "", "Sai token", null);
         }
-        if (imageExtra.isEmpty()) {
-            return Constants.JsonResponse(Constants.ERROR, "", "Thiếu ảnh 1", null);
-        }
-        if (imageExtra2.isEmpty()) {
-            return Constants.JsonResponse(Constants.ERROR, "", "Thiếu ảnh 2", null);
-        }
 
         Optional<Driver> check = driverService.findById(l.getUser_id());
 
@@ -248,15 +271,24 @@ public class UserApiController {
         }
 
         Users u = userService.findById(l.getUser_id()).get();
-        String oldAvatar = u.getLinkImage();
+
+        if (avatar == null) {
+            String oldAvatar = u.getImage();
+            u.setImage(oldAvatar);
+        } else {
+            String avt = Constants.uploadFile(avatar);
+            u.setImage(avt);
+        }
+        u.setTypeTasker(2);
+        userService.save(u);
 
         String image = Constants.uploadFile(imageExtra);
         String image2 = Constants.uploadFile(imageExtra2);
-        Vehicle newV = new Vehicle(u.getId(), vehiclePlate, "2019", vehicleType, 1, "", Constants.getTimeStamp(), image, image2);
+        Vehicle newV = new Vehicle(u.getId(), vehiclePlate, vehicleType, 1, 1, "", Constants.getTimeStamp(), image, image2);
         vehicleService.save(newV);
-        Driver newD = new Driver(u.getId(), Constants.DRIVER_OFFLINE, Constants.DRIVER_IDLE, 0, 0, driverType);
+        Driver newD = new Driver(u.getId(), Constants.DRIVER_OFFLINE, Constants.DRIVER_IDLE, 10.0, 0, "1");
         driverService.save(newD);
-        
+
         Map<String, Object> map = new HashMap<>();
         ObjectMapper obj = new ObjectMapper();
         map.put("status", Constants.SUCCESS);
@@ -278,14 +310,25 @@ public class UserApiController {
         return ResponseEntity.ok().build();
     }
 
-    @RequestMapping(value = "/forgotPassword", method = RequestMethod.GET)
-    public ResponseEntity<Users> forgotPassword(Integer id) {
-        Users contact = userService.getOne(id);
-        if (contact == null) {
-            return ResponseEntity.notFound().build();
-        }
+    @RequestMapping(value = "/forgotPassword", method = RequestMethod.POST)
+    public ResponseEntity forgotPassword(String email) throws JsonProcessingException {
 
-        userService.delete(contact);
-        return ResponseEntity.ok().build();
+        Users u = userService.findByEmail(email);
+
+        if (u == null) {
+            return Constants.JsonResponse(Constants.ERROR, "", "Email không tồn tại", null);
+        }
+        String newPass = Constants.generateString(10);
+        String newPassHash = Constants.encryptMD5(newPass);
+        u.setPassword(newPassHash);
+        userService.save(u);
+        SimpleMailMessage msg = new SimpleMailMessage();
+        msg.setTo(email);
+
+        msg.setSubject("Xin chào, đây là mật khẩu mới của bạn");
+        msg.setText(newPass);
+
+        mail.send(msg);
+        return Constants.JsonResponse(Constants.SUCCESS, "", "Gửi email thành công", null);
     }
 }

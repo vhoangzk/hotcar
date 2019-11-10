@@ -22,7 +22,7 @@ public interface DriverService extends JpaRepository<Driver, Integer>{
     
     public ArrayList<Driver> findByisOnlineAndDriverTypeAndIsBusy(Integer online, Integer type, Integer isBusy);
     
-    @Query("SELECT d FROM Driver d WHERE d.isOnline = 1")
+    @Query("SELECT d FROM Driver d WHERE d.isOnline = 1 AND driverType = 1 AND isBusy = 1")
     public ArrayList<Driver> findOnlineDriver(Sort sort);
     
 }

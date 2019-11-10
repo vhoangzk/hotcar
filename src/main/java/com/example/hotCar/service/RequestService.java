@@ -6,6 +6,7 @@
 package com.example.hotCar.service;
 
 import com.example.hotCar.model.Request;
+import java.util.ArrayList;
 import javax.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -21,4 +22,8 @@ public interface RequestService extends JpaRepository<Request, Integer>{
     @Modifying
     @Query("DELETE FROM Request WHERE passengerId = ?1")
     void deleteAllBypassengerId(Integer id);
+    
+    ArrayList<Request> findAllBydriverId(Integer Id);
+    
+    ArrayList<Request> findAllBypassengerId(Integer Id);
 }

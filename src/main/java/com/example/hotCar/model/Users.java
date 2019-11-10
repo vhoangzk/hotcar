@@ -5,10 +5,12 @@
  */
 package com.example.hotCar.model;
 
+import com.example.hotCar.until.Constants;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.File;
 import java.io.Serializable;
 import javax.persistence.*;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  *
@@ -34,7 +36,17 @@ public class Users implements Serializable {
     private Integer dateCreated;
     private Double rate;
     private Integer rateCount;
+    private Integer typeTasker;
 
+    public Integer getTypeTasker() {
+        return typeTasker;
+    }
+
+    public void setTypeTasker(Integer typeTasker) {
+        this.typeTasker = typeTasker;
+    }
+
+    
     public Users() {
     }
 
@@ -132,7 +144,7 @@ public class Users implements Serializable {
     }
 
     public Double getRate() {
-        return rate;
+        return Constants.formatNumber(rate);
     }
 
     public void setRate(Double rate) {
@@ -148,13 +160,13 @@ public class Users implements Serializable {
     }
 
     public String getLinkImage() {
-        String link;
-        link = System.getProperty("user.dir") + File.separator + "uploads" + File.separator + this.image;
-        File file = new File(link);
+        String path = System.getProperty("user.dir")  + "/uploads/" + this.image;
+        File file = new File(path);
         if (!file.exists()) {
-            return System.getProperty("user.dir") + File.separator + "uploads" + File.separator + "defaultAvatar.png";
+//            return link + "/uploads/defaultAvatar.png";
         } else {
-            return link;
+//            return link + "/uploads/" + this.image;
         }
+        return "http://bestapp.site/graduationproject/upload/user/15714215222avatar.jpg";
     }
 }

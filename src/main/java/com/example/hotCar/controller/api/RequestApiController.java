@@ -28,8 +28,10 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.servlet.http.HttpServletRequest;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -45,25 +47,111 @@ import org.springframework.web.bind.annotation.RestController;
 public class RequestApiController {
 
     @Autowired
-    LoginTokenService log;
+    LoginTokenService lSer;
     @Autowired
-    TripService trip;
+    TripService tSer;
     @Autowired
-    DriverService driverSer;
+    DriverService dSer;
     @Autowired
-    UserService user;
+    UserService uSer;
     @Autowired
     VehicleService vSer;
     @Autowired
     RequestService rSer;
 
-    @RequestMapping(value = "/showMyRequest", method = RequestMethod.GET)
+    @RequestMapping(value = "/showMyRequest", method = RequestMethod.POST)
     public ResponseEntity showMyRequest(String token) throws JsonProcessingException, Exception {
-        ArrayList<String> key = new ArrayList<>();
-        key.add("efVciM4sTl4:APA91bHG9yTn2eMe3fgyOkcG-KqHc3BPNvWKhkuKH90lLNtfcLMNxgoMzXoFFpU-it01So55jYjKQlx6BzOjt2i-12mm9T1ltEARQO7xnHRnLjShs5_RA8J6cXhnahnBOQYUvwz74h9J");
-        key.add("e3zDkKbzxCg:APA91bHrGxE8nv3b0GqJsMKGj9evDAnHAht8YtgBOG04TtQSbll7_iA1iyJvo1CZvK79ZiX-DsqWfBHM_9jJXLF4pqTdDnf_UCVproJ0liUQTHEgHksr1fPzMo7JhlYx3lCQP1eeBuz2");
-        FCMNotification.push(new ArrayList(), 1, "Hello anh em", key);
-        return Constants.JsonResponse(Constants.SUCCESS, 0, "OK", null);
+        LoginToken l = lSer.findByToken(token);
+        Driver d = dSer.findByuserId(l.getUser_id());
+        if (d == null) {
+            return Constants.JsonResponse(Constants.SUCCESS, "", "OK", null);
+        }
+        Users u = uSer.findById(d.getUserId()).get();
+        ArrayList<Request> arrR = rSer.findAllBydriverId(d.getUserId());
+        System.out.println("Request: " + arrR.size());
+        if (arrR.isEmpty()) {
+            return Constants.JsonResponse(Constants.SUCCESS, new ArrayList<>(), "OK", null);
+        }
+
+        Map<String, Object> data = new HashMap<>();
+        ArrayList<Map> arrData = new ArrayList<>();
+        arrR.forEach((r) -> {
+            Users p = uSer.findById(r.getPassengerId()).get();
+            Map<String, Object> driver = new HashMap<>();
+            Map<String, Object> passenger = new HashMap<>();
+            Map<String, Object> product = new HashMap<>();
+
+            data.put("id", r.getId());
+            data.put("passengerId", r.getPassengerId());
+            data.put("link", "Hot Bike");
+            data.put("driverId", r.getDriverId());
+            data.put("startTime", "");
+            data.put("startLat", r.getStartLat());
+            data.put("startLong", r.getStartLong());
+            data.put("endLat", r.getEndLat());
+            data.put("endLong", r.getEndLong());
+            data.put("startLocation", r.getStartLocation());
+            data.put("endLocation", r.getEndLocation());
+            data.put("requestTime", "");
+            data.put("distance", "");
+            data.put("estimate_fare", r.getEstimateFare());
+            data.put("passengerRate", p.getRate());
+            data.put("categoryName", "Hot Bike");
+
+            driver.put("driverName", d.getUserId());
+            driver.put("fullName", u.getFullName());
+            driver.put("image", u.getLinkImage());
+            driver.put("email", u.getEmail());
+            driver.put("description", "");
+            driver.put("gender", null);
+            driver.put("phone", u.getPhone());
+            driver.put("dob", "");
+            driver.put("address", "");
+            driver.put("balance", "0");
+            driver.put("isOnline", d.getIsOnline());
+            driver.put("rate", d.getRate());
+            driver.put("rateCount", d.getRateCount());
+            driver.put("carPlate", "8888");
+            driver.put("carImage", "http://bestapp.site/graduationproject/upload/job_type/motobike.png");
+
+            passenger.put("id", String.valueOf(p.getId()));
+            passenger.put("fullName", p.getFullName());
+            passenger.put("image", p.getLinkImage());
+            passenger.put("email", p.getEmail());
+            passenger.put("description", "");
+            passenger.put("gender", null);
+            passenger.put("phone", p.getPhone());
+            passenger.put("dob", "0000-00-00");
+            passenger.put("address", "");
+            passenger.put("balance", "0");
+            passenger.put("isOnline", "1");
+            passenger.put("rate", String.valueOf(p.getRate()));
+            passenger.put("rateCount", String.valueOf(p.getRateCount()));
+
+            product.put("id", "1");
+            product.put("shopName", "");
+            product.put("shopImage", "");
+            product.put("categoryId", "");
+            product.put("categoryName", "");
+            product.put("phone", "");
+            product.put("productName", "");
+            product.put("productSize", "");
+            product.put("quantity", "");
+            product.put("price", "");
+            product.put("shipFee", "");
+            product.put("totalPrice", "");
+            product.put("address", "");
+            product.put("image", "");
+            product.put("rate", "");
+            product.put("rateCount", "");
+            product.put("distance", "");
+
+            data.put("driver", driver);
+            data.put("passenger", passenger);
+            data.put("product", product);
+            arrData.add(data);
+        });
+        return Constants.JsonResponse(Constants.SUCCESS, arrData, "OK", null);
     }
 
     @RequestMapping(value = "/createRequest", method = RequestMethod.POST)
@@ -78,10 +166,10 @@ public class RequestApiController {
             Integer linkType
     ) throws JsonProcessingException {
 
-        LoginToken l = log.findByToken(token);
-        Users p = user.findById(l.getUser_id()).get();
-        ArrayList<Driver> onlineD = driverSer.findByisOnlineAndDriverTypeAndIsBusy(1, linkType, Constants.DRIVER_IDLE);
-
+        LoginToken l = lSer.findByToken(token);
+        Users p = uSer.findById(l.getUser_id()).get();
+        ArrayList<Driver> onlineD = dSer.findOnlineDriver(new Sort(Sort.Direction.DESC, "userId"));
+        ArrayList<String> key = new ArrayList<>();;
         Double distance = Constants.distance(startLat, startLong, endLat, endLong, "K");
         Double estimateFare = Constants.estimateFare(distance);
         int[] count = new int[]{0};
@@ -104,11 +192,16 @@ public class RequestApiController {
                     );
                     rSer.save(r);
                     count[0]++;
-                    System.out.println(dDist);
-                    System.out.println(count[0]);
+                    LoginToken lp = lSer.findByUserId(d.getUserId());
+                    key.add(lp.getToken());
                 }
-                //push notification
+                System.out.println("Distance from driver to start: " + dDist);
+                System.out.println("Number driver founded: " + count[0]);
             });
+        }
+        System.out.println("Key push size: " + key.size());
+        if (key.size() > 0) {
+            FCMNotification.push(new ArrayList(), "createRequest", "Bạn nhận được một yêu cầu chuyến đi", key);
         }
         Map<String, Object> map = new HashMap<>();
         ObjectMapper obj = new ObjectMapper();
@@ -122,11 +215,18 @@ public class RequestApiController {
 
     @RequestMapping(value = "/cancelRequest", method = RequestMethod.POST)
     public ResponseEntity cancelRequest(String token) throws JsonProcessingException {
-        LoginToken l = log.findByToken(token);
-        Users p = user.findById(l.getUser_id()).get();
+        LoginToken l = lSer.findByToken(token);
+        Users p = uSer.findById(l.getUser_id()).get();
 
-        rSer.deleteAllBypassengerId(p.getId());
-
+        ArrayList<Request> arrR = rSer.findAllBypassengerId(p.getId());
+        ArrayList<String> key = new ArrayList<>();
+        arrR.forEach((r) -> {
+            LoginToken l2 = lSer.findByUserId(r.getDriverId());
+            key.add(l2.getToken());
+            rSer.delete(r);
+        });
+        
+        FCMNotification.push(new ArrayList(), "cancelRequest", "Chuyen di da bi huy!", key);
         return Constants.JsonResponse(Constants.SUCCESS, "", "OK", null);
     }
 }
