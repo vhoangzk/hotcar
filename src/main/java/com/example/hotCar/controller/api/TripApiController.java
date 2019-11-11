@@ -201,6 +201,8 @@ public class TripApiController {
         }
         p.setRateCount(rateCount);
         user.save(p);
+        t.setPassengerRate(rate);
+        trip.save(t);
         System.out.println("Rate Passenger: " + rate);
         return Constants.JsonResponse(Constants.SUCCESS, "", "OK", null);
     }
@@ -221,6 +223,8 @@ public class TripApiController {
         }
         d.setRateCount(rateCount);
         driverSer.save(d);
+        t.setDriverRate(rate);
+        trip.save(t);
         System.out.println("Rate Driver: " + rate);
         return Constants.JsonResponse(Constants.SUCCESS, "", "OK", null);
     }
@@ -251,24 +255,34 @@ public class TripApiController {
             data.put("id", String.valueOf(t.getId()));
             data.put("passengerId", String.valueOf(t.getPassengerId()));
             data.put("link", "");
-            data.put("startTime", String.valueOf(t.getStartTime()));
+            data.put("startTime", String.valueOf(Constants.getDateTime(Constants.getLongTimeStamp())));
             data.put("startLat", t.getStartLat());
             data.put("startLong", t.getStartLong());
             data.put("endLat", t.getEndLat());
             data.put("endLong", t.getEndLong());
-            data.put("dateCreated", String.valueOf(t.getEndTime()));
+            data.put("dateCreated", String.valueOf(Constants.getDateTime(Constants.getLongTimeStamp())));
             data.put("driverId", String.valueOf(t.getDriverId()));
             data.put("startLocation", t.getStartLocation());
             data.put("endLocation", t.getEndLocation());
             data.put("status", String.valueOf(t.getStatus()));
-            data.put("endTime", String.valueOf(t.getEndTime()));
+            data.put("endTime", String.valueOf(Constants.getDateTime(Constants.getLongTimeStamp())));
             data.put("distance", String.valueOf(t.getDistance()));
             data.put("estimateFare", String.valueOf(t.getEstimateFare()));
             data.put("actualFare", String.valueOf(t.getActualFare()));
+            data.put("actualReceive", String.valueOf(t.getActualFare()));
             data.put("driverRate", String.valueOf(t.getDriverRate()));
             data.put("passengerRate", String.valueOf(t.getPassengerRate()));
+            data.put("totalTime", (t.getStartTime() - t.getEndTime()) / 60);
+            data.put("pickUpAtA", "0");
+            data.put("workAtB", "1");
+            data.put("startTimeWorking", "1560931003");
+            data.put("endTimeWorking", "1560931010");
+            data.put("paymentMethod", "2");
+            data.put("isWattingConfirm", "0");
+            data.put("isRate", "0");
+            data.put("productRate", "0");
 
-            driver.put("driverName", u.getFullName());
+            driver.put("fullName", u.getFullName());
             driver.put("identity", "");
             driver.put("rate", String.valueOf(d.getRate()));
             driver.put("rateCount", String.valueOf(d.getRateCount()));
@@ -278,7 +292,7 @@ public class TripApiController {
             driver.put("phone", u.getPhone());
 
             passenger.put("id", String.valueOf(p.getId()));
-            passenger.put("passengerName", p.getFullName());
+            passenger.put("fullName", p.getFullName());
             passenger.put("rate", String.valueOf(p.getRate()));
             passenger.put("rateCount", String.valueOf(p.getRateCount()));
             passenger.put("imagePassenger", p.getLinkImage());
@@ -367,6 +381,20 @@ public class TripApiController {
         data.put("passenger", passenger);
         data.put("product", product);
         String message = "Change status";
+        
+        if (null != status) switch (status) {
+            case Constants.TRIP_STATUS_APPROACHING:
+                message = "Tài xế đã tới điểm đón";
+                break;
+            case Constants.TRIP_STATUS_INPROGRESS:
+                message = "Tài xế đã tới điểm đón";
+                break;
+            case Constants.TRIP_STATUS_ARRIVED_A:
+                message = "Tài xế đã bắt đầu chuyến đi";
+                break;
+            default:
+                break;
+        }
 //        switch (status) {
 //            case Constants.TRIP_STATUS_APPROACHING:
 //                message = "Tài xế đã tới điểm đón";
@@ -411,8 +439,8 @@ public class TripApiController {
                 Constants.TRIP_STATUS_APPROACHING,
                 Constants.estimateFare(distance),
                 Constants.estimateFare(distance),
-                d.getRate(),
-                p.getRate()
+                0.0,
+                0.0
         );
         d.setIsBusy(Constants.DRIVER_BUSY);
         driverSer.save(d);

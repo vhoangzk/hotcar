@@ -24,6 +24,6 @@ public interface TripService extends JpaRepository<Trip, Integer> {
 //    @Query("SELECT t FROM Trip t WHERE t.passengerId = ?1 OR t.driverId = ?1 ORDER BY t.id DESC LIMIT 10 OFFSET ?2")
 //    ArrayList<Trip> findMyTrip(Integer id, Integer offset);
     
-    @Query("SELECT t FROM Trip t WHERE passengerId = ?1 OR driverId = ?1 ORDER BY t.id DESC")
+    @Query("SELECT t FROM Trip t WHERE t.passengerId = ?1 OR t.driverId = ?1 ORDER BY t.id DESC")
     ArrayList<Trip> findMyTrip(Integer id);
 }

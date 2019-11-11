@@ -199,6 +199,9 @@ public class RequestApiController {
                 System.out.println("Number driver founded: " + count[0]);
             });
         }
+        System.setProperty("file.encoding", "UTF-8");
+        System.out.println("Start location: " + startLocation);
+        System.out.println(System.getProperty("file.encoding"));
         System.out.println("Key push size: " + key.size());
         if (key.size() > 0) {
             FCMNotification.push(new ArrayList(), "createRequest", "Bạn nhận được một yêu cầu chuyến đi", key);

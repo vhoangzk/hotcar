@@ -16,7 +16,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.sql.Timestamp;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -101,6 +103,18 @@ public class Constants {
         Date d = new Date();
         long t = d.getTime() / 1000;
         return (int) t;
+    }
+    
+    public static long getLongTimeStamp() {
+        Date d = new Date();
+        long t = d.getTime() / 1000;
+        return t;
+    }
+
+    public static Date getDateTime(long time) {
+        Timestamp ts = new Timestamp(System.currentTimeMillis());
+        Date date = ts;
+        return date;
     }
 
     public static Double estimateFare(Double distance) {

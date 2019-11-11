@@ -11,19 +11,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
  *
- * @author Lab06
+ * @author Admin
  */
 @Controller
 @RequestMapping("/")
-public class UserController {
-
-    @RequestMapping(value = "/login", method = RequestMethod.GET)
-    public String login() {
-        return "login";
-    }
-    
-    @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public String postLogin() {
-        return "login";
+public class WebController {
+    @RequestMapping(value = "/home", method = RequestMethod.GET)
+    public String home() {
+        return "homepage";
     }
 }
