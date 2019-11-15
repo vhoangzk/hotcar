@@ -74,7 +74,7 @@ public class GeneralApiController {
         data.put("sf_of_link_iii", "0");
 
         listJob.put("link", "1");
-        listJob.put("name", "Hoat Bike");
+        listJob.put("name", "Hot Bike");
         listJob.put("startFare", "0.0");
         listJob.put("feePerMinute", "0.0");
         listJob.put("feePerKilometer", "0.0");

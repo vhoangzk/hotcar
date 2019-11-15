@@ -8,9 +8,13 @@ package com.example.hotCar.model;
 import com.example.hotCar.until.Constants;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
+import java.net.URL;
+import java.nio.file.Path;
 import javax.persistence.*;
-import javax.servlet.http.HttpServletRequest;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 
 /**
  *
@@ -159,14 +163,13 @@ public class Users implements Serializable {
         this.rateCount = rateCount;
     }
 
-    public String getLinkImage() {
-        String path = System.getProperty("user.dir")  + "/uploads/" + this.image;
+    public String getLinkImage() throws IOException {
+        String path = System.getProperty("user.dir")  + "/src/main/resources/static/uploads/" + this.image;
         File file = new File(path);
-        if (!file.exists()) {
-//            return link + "/uploads/defaultAvatar.png";
+        if (file.exists()) {
+            return Constants.getBaseEnvLinkURL() + "/uploads/" + this.image;
         } else {
-//            return link + "/uploads/" + this.image;
+        return Constants.getBaseEnvLinkURL() + "/uploads/defaultAvatar.png";
         }
-        return "http://bestapp.site/graduationproject/upload/user/15714215222avatar.jpg";
     }
 }

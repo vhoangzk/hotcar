@@ -19,10 +19,13 @@ import com.example.hotCar.until.Constants;
 import com.example.hotCar.until.FCMNotification;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -100,7 +103,7 @@ public class TripApiController {
         driver.put("identity", "");
         driver.put("rate", String.valueOf(d.getRate()));
         driver.put("rateCount", String.valueOf(d.getRateCount()));
-        driver.put("imageDriver", u.getLinkImage());
+        driver.put("imageDriver", "");
         driver.put("carPlate", "8888");
         driver.put("carImage", "http://bestapp.site/graduationproject/upload/job_type/motobike.png");
         driver.put("phone", u.getPhone());
@@ -109,7 +112,7 @@ public class TripApiController {
         passenger.put("passengerName", p.getFullName());
         passenger.put("rate", String.valueOf(p.getRate()));
         passenger.put("rateCount", String.valueOf(p.getRateCount()));
-        passenger.put("imagePassenger", p.getLinkImage());
+        passenger.put("imagePassenger", "");
         passenger.put("phone", p.getPhone());
 
         product.put("id", "1");
@@ -134,7 +137,8 @@ public class TripApiController {
         data.put("driver", driver);
         data.put("passenger", passenger);
         data.put("product", product);
-
+        
+        System.out.println("Trip detail id: " + tripId);
         return Constants.JsonResponse(Constants.SUCCESS, data, "OK", null);
     }
 
@@ -153,6 +157,7 @@ public class TripApiController {
         Trip t = trip.findById(tripId).get();
         Driver d = driverSer.findByuserId(t.getDriverId());
         t.setStatus(Constants.TRIP_STATUS_FINISH);
+        t.setEndTime(Constants.getTimeStamp());
         trip.save(t);
         d.setIsBusy(Constants.DRIVER_IDLE);
         driverSer.save(d);
@@ -237,70 +242,78 @@ public class TripApiController {
 //        Integer size = (int) allTrip.size() / 10;
 //        Integer offset = (page - 1) * size;
 //        System.out.println("All trips: " + allTrip.size());
+
+        if (l == null) {
+            return Constants.JsonResponse(Constants.ERROR, "", "Sai token", null);
+        }
         ArrayList<Trip> ts = trip.findMyTrip(l.getUser_id());
-        System.out.println("Trips: " + ts.size());
         if (ts.isEmpty()) {
             return Constants.JsonResponse(Constants.SUCCESS, "", "OK", null);
         }
+        System.out.println("Trips: " + ts.size());
         ArrayList<Map> arrRtn = new ArrayList<>();
         ts.forEach((t) -> {
-            Map<String, Object> data = new HashMap<>();
-            Driver d = driverSer.findByuserId(t.getDriverId());
-            Users u = user.findById(d.getUserId()).get();
-            Users p = user.findById(t.getPassengerId()).get();
-
-            Map<String, Object> driver = new HashMap<>();
-            Map<String, Object> passenger = new HashMap<>();
-
-            data.put("id", String.valueOf(t.getId()));
-            data.put("passengerId", String.valueOf(t.getPassengerId()));
-            data.put("link", "");
-            data.put("startTime", String.valueOf(Constants.getDateTime(Constants.getLongTimeStamp())));
-            data.put("startLat", t.getStartLat());
-            data.put("startLong", t.getStartLong());
-            data.put("endLat", t.getEndLat());
-            data.put("endLong", t.getEndLong());
-            data.put("dateCreated", String.valueOf(Constants.getDateTime(Constants.getLongTimeStamp())));
-            data.put("driverId", String.valueOf(t.getDriverId()));
-            data.put("startLocation", t.getStartLocation());
-            data.put("endLocation", t.getEndLocation());
-            data.put("status", String.valueOf(t.getStatus()));
-            data.put("endTime", String.valueOf(Constants.getDateTime(Constants.getLongTimeStamp())));
-            data.put("distance", String.valueOf(t.getDistance()));
-            data.put("estimateFare", String.valueOf(t.getEstimateFare()));
-            data.put("actualFare", String.valueOf(t.getActualFare()));
-            data.put("actualReceive", String.valueOf(t.getActualFare()));
-            data.put("driverRate", String.valueOf(t.getDriverRate()));
-            data.put("passengerRate", String.valueOf(t.getPassengerRate()));
-            data.put("totalTime", (t.getStartTime() - t.getEndTime()) / 60);
-            data.put("pickUpAtA", "0");
-            data.put("workAtB", "1");
-            data.put("startTimeWorking", "1560931003");
-            data.put("endTimeWorking", "1560931010");
-            data.put("paymentMethod", "2");
-            data.put("isWattingConfirm", "0");
-            data.put("isRate", "0");
-            data.put("productRate", "0");
-
-            driver.put("fullName", u.getFullName());
-            driver.put("identity", "");
-            driver.put("rate", String.valueOf(d.getRate()));
-            driver.put("rateCount", String.valueOf(d.getRateCount()));
-            driver.put("imageDriver", u.getLinkImage());
-            driver.put("carPlate", "8888");
-            driver.put("carImage", "http://bestapp.site/graduationproject/upload/job_type/motobike.png");
-            driver.put("phone", u.getPhone());
-
-            passenger.put("id", String.valueOf(p.getId()));
-            passenger.put("fullName", p.getFullName());
-            passenger.put("rate", String.valueOf(p.getRate()));
-            passenger.put("rateCount", String.valueOf(p.getRateCount()));
-            passenger.put("imagePassenger", p.getLinkImage());
-            passenger.put("phone", p.getPhone());
-
-            data.put("driver", driver);
-            data.put("passenger", passenger);
-            arrRtn.add(data);
+            try {
+                Map<String, Object> data = new HashMap<>();
+                Driver d = driverSer.findByuserId(t.getDriverId());
+                Users u = user.findById(d.getUserId()).get();
+                Users p = user.findById(t.getPassengerId()).get();
+                
+                Map<String, Object> driver = new HashMap<>();
+                Map<String, Object> passenger = new HashMap<>();
+                
+                data.put("id", String.valueOf(t.getId()));
+                data.put("passengerId", String.valueOf(t.getPassengerId()));
+                data.put("link", "Hot Bike");
+                data.put("startTime", String.valueOf(Constants.getDateTime((long) t.getStartTime())));
+                data.put("startLat", t.getStartLat());
+                data.put("startLong", t.getStartLong());
+                data.put("endLat", t.getEndLat());
+                data.put("endLong", t.getEndLong());
+                data.put("dateCreated", String.valueOf(Constants.getDateTime((long) t.getStartTime())));
+                data.put("driverId", String.valueOf(t.getDriverId()));
+                data.put("startLocation", t.getStartLocation());
+                data.put("endLocation", t.getEndLocation());
+                data.put("status", String.valueOf(t.getStatus()));
+                data.put("endTime", String.valueOf(Constants.getDateTime((long) t.getEndTime())));
+                data.put("distance", String.valueOf(t.getDistance()));
+                data.put("estimateFare", String.valueOf(t.getEstimateFare()));
+                data.put("actualFare", String.valueOf(t.getActualFare()));
+                data.put("actualReceive", String.valueOf(t.getActualFare()));
+                data.put("driverRate", String.valueOf(t.getDriverRate()));
+                data.put("passengerRate", String.valueOf(t.getPassengerRate()));
+                data.put("totalTime", (t.getEndTime()- t.getStartTime()) / 60);
+                data.put("pickUpAtA", "0");
+                data.put("workAtB", "1");
+                data.put("startTimeWorking", "1560931003");
+                data.put("endTimeWorking", "1560931010");
+                data.put("paymentMethod", "2");
+                data.put("isWattingConfirm", "0");
+                data.put("isRate", "0");
+                data.put("productRate", "0");
+                
+                driver.put("fullName", u.getFullName());
+                driver.put("identity", "");
+                driver.put("rate", String.valueOf(d.getRate()));
+                driver.put("rateCount", String.valueOf(d.getRateCount()));
+                driver.put("imageDriver", u.getLinkImage());
+                driver.put("carPlate", "8888");
+                driver.put("carImage", "http://bestapp.site/graduationproject/upload/job_type/motobike.png");
+                driver.put("phone", u.getPhone());
+                
+                passenger.put("id", String.valueOf(p.getId()));
+                passenger.put("fullName", p.getFullName());
+                passenger.put("rate", String.valueOf(p.getRate()));
+                passenger.put("rateCount", String.valueOf(p.getRateCount()));
+                passenger.put("imagePassenger", p.getLinkImage());
+                passenger.put("phone", p.getPhone());
+                
+                data.put("driver", driver);
+                data.put("passenger", passenger);
+                arrRtn.add(data);
+            } catch (IOException ex) {
+                Logger.getLogger(TripApiController.class.getName()).log(Level.SEVERE, null, ex);
+            }
         });
 
         return Constants.JsonResponse(Constants.SUCCESS, arrRtn, "OK", null);
@@ -381,19 +394,21 @@ public class TripApiController {
         data.put("passenger", passenger);
         data.put("product", product);
         String message = "Change status";
-        
-        if (null != status) switch (status) {
-            case Constants.TRIP_STATUS_APPROACHING:
-                message = "Tài xế đã tới điểm đón";
-                break;
-            case Constants.TRIP_STATUS_INPROGRESS:
-                message = "Tài xế đã tới điểm đón";
-                break;
-            case Constants.TRIP_STATUS_ARRIVED_A:
-                message = "Tài xế đã bắt đầu chuyến đi";
-                break;
-            default:
-                break;
+
+        if (null != status) {
+            switch (status) {
+                case Constants.TRIP_STATUS_APPROACHING:
+                    message = "Tài xế đã tới điểm đón";
+                    break;
+                case Constants.TRIP_STATUS_INPROGRESS:
+                    message = "Tài xế đã tới điểm đón";
+                    break;
+                case Constants.TRIP_STATUS_ARRIVED_A:
+                    message = "Tài xế đã bắt đầu chuyến đi";
+                    break;
+                default:
+                    break;
+            }
         }
 //        switch (status) {
 //            case Constants.TRIP_STATUS_APPROACHING:
@@ -445,7 +460,13 @@ public class TripApiController {
         d.setIsBusy(Constants.DRIVER_BUSY);
         driverSer.save(d);
         trip.save(t);
-        rSer.deleteAllBypassengerId(t.getPassengerId());
+        ArrayList<Request> otherR = rSer.findAllBypassengerId(t.getPassengerId());
+        ArrayList<String> otherL = new ArrayList<>();
+        otherR.forEach((oR) -> {
+            LoginToken oL = log.findByUserId(oR.getDriverId());
+            otherL.add(oL.getToken());
+            rSer.delete(oR);
+        });
         Map<String, Object> data = new HashMap<>();
         Map<String, Object> driver = new HashMap<>();
         Map<String, Object> passenger = new HashMap<>();
@@ -518,7 +539,10 @@ public class TripApiController {
         data1.put("body", "Tài xế đã nhận chuyến");
         LoginToken l2 = log.findByUserId(t.getPassengerId());
         FCMNotification.pushFCMNotification(l2.getToken(), data1);
-        
+        if (otherL.size() > 0) {
+            FCMNotification.push(new ArrayList(), "driverConfirm", "Chuyến đi đã được nhận bởi tài xế khác", otherL);
+        }
+
         System.out.println("Start location: " + startLocation);
         return Constants.JsonResponse(Constants.SUCCESS, data, "OK", null);
     }

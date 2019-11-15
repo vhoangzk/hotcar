@@ -129,12 +129,11 @@ public class UserApiController {
             userService.save(u);
             System.out.println("Đăng ký OK");
             return Constants.JsonResponse(Constants.SUCCESS, "", "Đăng ký thành công", null);
-
         }
     }
 
     @RequestMapping(value = "/showUserInfo", method = RequestMethod.POST)
-    public ResponseEntity<Users> showUserInfo(String token) throws JsonProcessingException {
+    public ResponseEntity<Users> showUserInfo(String token) throws JsonProcessingException, IOException {
         if (token.equals("")) {
             return Constants.JsonResponse(Constants.ERROR, "", "Thiếu token", null);
         } else {
@@ -218,7 +217,7 @@ public class UserApiController {
     }
 
     @RequestMapping(value = "/online", method = RequestMethod.POST)
-    public ResponseEntity online(String token, String status, String lat,@RequestParam("long") String lon) throws JsonProcessingException {
+    public ResponseEntity online(String token, String status, String lat, @RequestParam("long") String lon) throws JsonProcessingException {
         LoginToken log = logService.findByToken(token);
         Integer userId = log.getUser_id();
         Driver u = driverService.findByuserId(userId);
@@ -232,15 +231,37 @@ public class UserApiController {
 
     @RequestMapping(value = "/updateProfile/", method = RequestMethod.GET)
     public ResponseEntity<Users> updateProfile(
-            Integer contactId
-    ) {
-        Users contact = userService.getOne(contactId);
-        if (contact == null) {
-            return ResponseEntity.notFound().build();
+            @RequestParam String full_name,
+            String token,
+            String email,
+            String phone,
+            String password,
+            MultipartFile image
+    ) throws JsonProcessingException, IOException {
+        if (email.length() == 0 || password.length() == 0) {
+            return Constants.JsonResponse(Constants.ERROR, "", "Missing param", null);
         }
-
-        Users updatedContact = userService.save(contact);
-        return ResponseEntity.ok(updatedContact);
+        if (image.isEmpty()) {
+            return Constants.JsonResponse(Constants.ERROR, "", "Please select image", null);
+        }
+        
+        LoginToken l = logService.findByToken(token);
+        Users u = userService.findById(l.getUser_id()).get();
+        String filename = Constants.uploadFile(image);
+        u.setEmail(email);
+        u.setPassword(Constants.encryptMD5(password));
+        u.setFullName(full_name);
+        u.setDateCreated(Constants.getTimeStamp());
+        u.setImage(filename);
+        u.setGender(1);
+        u.setPhone(phone);
+        u.setStatus(Constants.STT_ACTIVE);
+        u.setRate(10.0);
+        u.setRateCount(0);
+        u.setTypeTasker(3);
+        userService.save(u);
+        System.out.println("Update profile OK");
+        return Constants.JsonResponse(Constants.SUCCESS, "", "Cập nhật thành công", null);
     }
 
     @RequestMapping(value = "/registerShop", method = RequestMethod.POST)
