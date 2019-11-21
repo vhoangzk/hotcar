@@ -22,8 +22,8 @@ public class UserController {
         return "login";
     }
     
-    @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public String postLogin() {
-        return "login";
+    @RequestMapping(value = "/list", method = RequestMethod.GET)
+    public String list() {
+        return "tables";
     }
 }

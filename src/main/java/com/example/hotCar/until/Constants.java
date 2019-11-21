@@ -193,13 +193,14 @@ public class Constants {
                         currentRequestAttributes()).getRequest();
         // lazy about determining protocol but can be done too
         baseEnvLinkURL = "http://" + currentRequest.getServerName();
-//        System.out.println(currentRequest.getLocalPort());
-//        if (currentRequest.getLocalPort() != 80) {
-//            baseEnvLinkURL += ":" + currentRequest.getLocalPort();
-//        }
-//        if (!StringUtils.isEmpty(currentRequest.getContextPath())) {
-//            baseEnvLinkURL += currentRequest.getContextPath();
-//        }
+        //        Show port
+        if (currentRequest.getLocalPort() != 80) {
+            baseEnvLinkURL += ":" + currentRequest.getLocalPort();
+        }
+        if (!StringUtils.isEmpty(currentRequest.getContextPath())) {
+            baseEnvLinkURL += currentRequest.getContextPath();
+        }
+        //        Show port
         return baseEnvLinkURL;
     }
     
