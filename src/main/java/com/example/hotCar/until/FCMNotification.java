@@ -24,8 +24,8 @@ import org.json.JSONObject;
 public class FCMNotification {
 
     // Method to send Notifications from server to client end.
-    public final static String AUTH_KEY_FCM = "AAAAaAYV4R0:APA91bHejwPVCIIXjC5BfxelyeO37lL5bmZDtn3j6WHNJCgDr6WpguktkfS1Yy9QDMQrJN3pPtHxfuYSyE0p8ocQ4kYE_ZHZey84_8SHQH72jj7qH1rf6-SGTK0eX7z8o2YPRyuaFILE";
-    public final static String API_URL_FCM = "https://fcm.googleapis.com/fcm/send";
+    public final static String AUTH_KEY_FCM = Constants.AUTH_KEY_FCM;
+    public final static String API_URL_FCM = Constants.API_URL_FCM;
 
     public static void pushFCMNotification(String DeviceIdKey, JSONObject ob) throws Exception, IOException {
 

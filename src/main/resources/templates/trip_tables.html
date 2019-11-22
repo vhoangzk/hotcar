@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main}">
+<head>
+    <title>Charts</title>
+</head>
+<body>
+<div layout:fragment="content" class="container-fluid">
+
+    <!-- Breadcrumbs-->
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="#">Trang chủ</a>
+        </li>
+        <li class="breadcrumb-item active">Danh sách chuyến đi</li>
+    </ol>
+
+    <!-- DataTables Example -->
+    <div class="card mb-3">
+        <div class="card-header">
+            <i class="fas fa-table"></i>
+            Danh sách chuyến đi
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Tài xế</th>
+                        <th>Hành khách</th>
+                        <th>Điểm đi</th>
+                        <th>Điểm đến</th>
+                        <th>Thời gian</th>
+                        <th>Trạng thái</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tfoot>
+                    <tr>
+                        <th>ID</th>
+                        <th>Tài xế</th>
+                        <th>Hành khách</th>
+                        <th>Điểm đi</th>
+                        <th>Điểm đến</th>
+                        <th>Thời gian</th>
+                        <th>Trạng thái</th>
+                        <th></th>
+                    </tr>
+                    </tfoot>
+                    <tbody>
+
+                    <tr th:if="${trips.empty}">
+                        <td colspan="2"> No Trip Available </td>
+                    </tr>
+
+                    <tr th:each="trip : ${trips}">
+                        <td th:text="${'#' + trip.id}">Tiger Nixon</td>
+                        <td th:text="${trip.endLat}">System Architect</td>
+                        <td th:text="${trip.startLat}">System Architect</td>
+                        <td th:text="${trip.startLocation}" width="20%">System Architect</td>
+                        <td th:text="${trip.endLocation}" width="20%">System Architect</td>
+                        <td th:text="${trip.distance}">61</td>
+                        <td th:switch="${trip.status}">
+                            <div th:case="1">Đang tới điểm đón</div>
+                            <div th:case="2">Đang trong chuyến đi</div>
+                            <div th:case="3">Đang tới điểm đón</div>
+                            <div th:case="4">Đã kết thúc</div>
+                            <div th:case="*">Khác</div>
+                        </td>
+                        <td><a th:id="${trip.id}" href="javascript:void(0);" th:class="${trip.status != 4} ? 'btn btn-primary btn-trip-status' : 'btn btn-secondary disabled'" th:text="Xóa"></a></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
+    </div>
+
+    <p class="small text-center text-muted my-5">
+        <em>More table examples coming soon...</em>
+    </p>
+
+</div>
+<!-- /.container-fluid -->
+</body>
+</html>

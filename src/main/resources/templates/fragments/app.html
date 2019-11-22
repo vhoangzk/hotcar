@@ -42,6 +42,37 @@
 <section th:fragment="script">
     <!-- Bootstrap core JavaScript-->
     <script type="text/javascript" th:src="@{/vendor/jquery/jquery.min.js}"></script>
+    <script>
+        $(document).ready(function () {
+            $('.btn-user-status').click(function (e) {
+                e.preventDefault();
+                var id = $(this).attr('id');
+
+                $.ajax({
+                    url: '/activeUser',
+                    method: 'POST',
+                    data: {id: id},
+                    success: function () {
+                        location.reload();
+                    }
+                });
+            });
+
+            $('.btn-trip-status').click(function (e) {
+                e.preventDefault();
+                var id = $(this).attr('id');
+                console.log(1);
+                $.ajax({
+                    url: '/tripDelete',
+                    method: 'POST',
+                    data: {id: id},
+                    success: function () {
+                        location.reload();
+                    }
+                });
+            });
+        });
+    </script>
     <script type="text/javascript" th:src="@{/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
 
     <!-- Core plugin JavaScript-->
@@ -67,6 +98,7 @@
 <!--        b.src = "//bizfly.todo.vn/api/embed/js/" + e;-->
 <!--        a.parentNode.insertBefore(b, a)-->
 <!--    })(window, document, "script", "atmDataLayer", "f81f3e6e-2b29-43d8-a7ea-7aceea95906f");</script>-->
+
 </section>
 
 <!-- Sticky Footer -->

@@ -5,6 +5,7 @@
  */
 package com.example.hotCar.model;
 
+import com.example.hotCar.until.Constants;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.Serializable;
 import javax.persistence.*;
@@ -229,7 +230,7 @@ public class Trip implements Serializable {
     public void setPassengerRate(Double passengerRate) {
         this.passengerRate = passengerRate;
     }
-    
+   
     
    
 }

@@ -22,6 +22,7 @@ import java.security.NoSuchAlgorithmException;
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -89,11 +90,21 @@ public class UserApiController {
             m.put("typeAccount", 0);
             System.out.println("Login: " + u.getEmail());
             return Constants.JsonResponse(Constants.SUCCESS, m, "OK", null);
-        } else {
+        } else if (u != null && Objects.equals(u.getStatus(), Constants.STT_INACTIVE)) {
+            return Constants.JsonResponse(Constants.ERROR, "", "Tài khoản hiện đang bị khóa. Vui lòng liên hệ admin!", null);
+        }  else {
             return Constants.JsonResponse(Constants.ERROR, "", "Sai tên đăng nhập hoặc mật khẩu", null);
         }
     }
 
+    @RequestMapping(value = "/logout", method = RequestMethod.POST)
+    public ResponseEntity<Users> logout(String token) throws JsonProcessingException {
+        LoginToken l = logService.findByToken(token);
+        logService.delete(l);
+        return Constants.JsonResponse(Constants.SUCCESS, "", "OK", null);
+    }
+    
+    
     @RequestMapping(value = "/signup", method = RequestMethod.POST)
     public ResponseEntity<Users> createNew(@RequestParam String full_name,
             String email,
@@ -329,7 +340,7 @@ public class UserApiController {
         return ResponseEntity.ok().build();
     }
 
-    @RequestMapping(value = "/forgotPassword", method = RequestMethod.POST)
+    @RequestMapping(value = "/forgotPassword", method = RequestMethod.GET)
     public ResponseEntity forgotPassword(String email) throws JsonProcessingException {
 
         Users u = userService.findByEmail(email);

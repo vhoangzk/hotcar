@@ -9,7 +9,7 @@
             <span>Trang chủ</span>
         </a>
     </li>
-    <li class="nav-item dropdown">
+    <li class="nav-item dropdown d-none">
         <a class="nav-link dropdown-toggle" href="#" id="pagesDropdown" role="button" data-toggle="dropdown"
            aria-haspopup="true" aria-expanded="false">
             <i class="fas fa-fw fa-folder"></i>
@@ -32,9 +32,14 @@
             <span>Charts</span></a>
     </li>
     <li class="nav-item">
-        <a class="nav-link" th:href="@{/tables}">
+        <a class="nav-link" th:href="@{/list}">
             <i class="fas fa-fw fa-table"></i>
-            <span>Tables</span></a>
+            <span>Danh sách người dùng</span></a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" th:href="@{/trip_tables}">
+            <i class="fas fa-fw fa-table"></i>
+            <span>Danh sách chuyến đi</span></a>
     </li>
 </ul>
 

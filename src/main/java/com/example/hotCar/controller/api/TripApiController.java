@@ -10,26 +10,24 @@ import com.example.hotCar.model.LoginToken;
 import com.example.hotCar.model.Request;
 import com.example.hotCar.model.Trip;
 import com.example.hotCar.model.Users;
+import com.example.hotCar.model.Vehicle;
 import com.example.hotCar.service.DriverService;
 import com.example.hotCar.service.LoginTokenService;
 import com.example.hotCar.service.RequestService;
 import com.example.hotCar.service.TripService;
 import com.example.hotCar.service.UserService;
+import com.example.hotCar.service.VehicleService;
 import com.example.hotCar.until.Constants;
 import com.example.hotCar.until.FCMNotification;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.http.HttpServletRequest;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -54,9 +52,11 @@ public class TripApiController {
     UserService user;
     @Autowired
     RequestService rSer;
+    @Autowired
+    VehicleService vSer;
 
     @RequestMapping(value = "/showTripDetail", method = RequestMethod.POST)
-    public ResponseEntity showTripDetail(String token, Integer tripId) throws JsonProcessingException {
+    public ResponseEntity showTripDetail(String token, Integer tripId) throws JsonProcessingException, IOException {
         LoginToken l = log.findByToken(token);
         Trip t = trip.findById(tripId).get();
         if (t == null) {
@@ -66,6 +66,7 @@ public class TripApiController {
         Driver d = driverSer.findByuserId(t.getDriverId());
         Users u = user.findById(d.getUserId()).get();
         Users p = user.findById(t.getPassengerId()).get();
+        Vehicle v = vSer.findByuserId(d.getUserId());
 
         Map<String, Object> data = new HashMap<>();
         Map<String, Object> driver = new HashMap<>();
@@ -103,8 +104,8 @@ public class TripApiController {
         driver.put("identity", "");
         driver.put("rate", String.valueOf(d.getRate()));
         driver.put("rateCount", String.valueOf(d.getRateCount()));
-        driver.put("imageDriver", "");
-        driver.put("carPlate", "8888");
+        driver.put("imageDriver", u.getLinkImage());
+        driver.put("carPlate", v.getCarPlate());
         driver.put("carImage", "http://bestapp.site/graduationproject/upload/job_type/motobike.png");
         driver.put("phone", u.getPhone());
 
@@ -112,7 +113,7 @@ public class TripApiController {
         passenger.put("passengerName", p.getFullName());
         passenger.put("rate", String.valueOf(p.getRate()));
         passenger.put("rateCount", String.valueOf(p.getRateCount()));
-        passenger.put("imagePassenger", "");
+        passenger.put("imagePassenger", p.getLinkImage());
         passenger.put("phone", p.getPhone());
 
         product.put("id", "1");
@@ -201,7 +202,7 @@ public class TripApiController {
             p.setRate(rate);
         } else {
             Double pRate = p.getRate();
-            Double pRate2 = pRate + rate / rateCount;
+            Double pRate2 = (pRate + rate) / 2;
             p.setRate(pRate2);
         }
         p.setRateCount(rateCount);
@@ -223,7 +224,7 @@ public class TripApiController {
             d.setRate(rate);
         } else {
             Double pRate = d.getRate();
-            Double pRate2 = pRate + rate / rateCount;
+            Double pRate2 = (pRate + rate) / 2;
             d.setRate(pRate2);
         }
         d.setRateCount(rateCount);

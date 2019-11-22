@@ -16,7 +16,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -32,7 +31,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
@@ -63,6 +61,9 @@ public class Constants {
     
     public static Integer DRIVER_ONLINE = 1;
     public static Integer DRIVER_OFFLINE = 0;
+    
+    public final static String AUTH_KEY_FCM = "AAAAAGllz4E:APA91bHFh1AzGmyaR5X-wLph-eREywS5wniyh1OcC2jqfp9CltzPu9IV-_X-JDElKsrqyvV6C-Sl_tH39ORvCEZqdidlp8hvQZBGveBuzGlx0H6L2I3WMm-pvLN8n_x3pfGVIC4DAv48";
+    public final static String API_URL_FCM = "https://fcm.googleapis.com/fcm/send";
     
     public static String encryptMD5(String input) {
         try {
@@ -192,15 +193,16 @@ public class Constants {
                 = ((ServletRequestAttributes) RequestContextHolder.
                         currentRequestAttributes()).getRequest();
         // lazy about determining protocol but can be done too
-        baseEnvLinkURL = "http://" + currentRequest.getServerName();
-        //        Show port
-        if (currentRequest.getLocalPort() != 80) {
-            baseEnvLinkURL += ":" + currentRequest.getLocalPort();
+        baseEnvLinkURL = currentRequest.getScheme() + "://" + currentRequest.getServerName();
+//        System.out.println(currentRequest.getRequestURL());
+//        System.out.println(currentRequest.getRequestURI());
+//        System.out.println(currentRequest.getLocalAddr());
+//        System.out.println(currentRequest.getLocalPort());
+//        System.out.println(currentRequest.getScheme());
+//        System.out.println(currentRequest.getRequestURL().toString().contains(":" + currentRequest.getLocalPort()));
+        if (currentRequest.getRequestURL().toString().contains(":" + currentRequest.getLocalPort())) {
+                baseEnvLinkURL += ":" + currentRequest.getLocalPort();
         }
-        if (!StringUtils.isEmpty(currentRequest.getContextPath())) {
-            baseEnvLinkURL += currentRequest.getContextPath();
-        }
-        //        Show port
         return baseEnvLinkURL;
     }
     

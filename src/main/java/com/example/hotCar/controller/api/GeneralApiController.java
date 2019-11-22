@@ -18,7 +18,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -46,6 +45,7 @@ public class GeneralApiController {
 
     @RequestMapping(value = "/generalSettings", method = RequestMethod.POST)
     public ResponseEntity generalSetting() throws JsonProcessingException {
+        String link = Constants.getBaseEnvLinkURL();
         Map<String, Object> data = new HashMap<>();
         ArrayList arrListJob = new ArrayList();
         Map<String, Object> listJob = new HashMap<>();
@@ -79,10 +79,10 @@ public class GeneralApiController {
         listJob.put("feePerMinute", "0.0");
         listJob.put("feePerKilometer", "0.0");
         listJob.put("orderNumber", "1");
-        listJob.put("image", "http://bestapp.site/graduationproject/upload/job_type/1571658782.png");
-        listJob.put("imgActive", "http://bestapp.site/graduationproject/upload/job_type/1571658782_active.png");
-        listJob.put("imgMarker", "http://bestapp.site/graduationproject/upload/job_type/1571658782_active.png");
-        listJob.put("imgSelected", "http://bestapp.site/graduationproject/upload/job_type/1571658782_selected.png");
+        listJob.put("image", link + "/uploads/hotbike.png");
+        listJob.put("imgActive", link + "/uploads/hotbike.png");
+        listJob.put("imgMarker", link + "/uploads/hotbike.png");
+        listJob.put("imgSelected", link + "/uploads/hotbike.png");
         listJob.put("pickUpAtA", "1");
         listJob.put("workAtB", "0");
         listJob.put("taskRate", "0");
@@ -94,10 +94,10 @@ public class GeneralApiController {
         listJob2.put("feePerMinute", "0.0");
         listJob2.put("feePerKilometer", "0.0");
         listJob2.put("orderNumber", "5");
-        listJob2.put("image", "http://bestapp.site/graduationproject/upload/job_type/1571658814.png");
-        listJob2.put("imgActive", "http://bestapp.site/graduationproject/upload/job_type/1571658886_active.png");
-        listJob2.put("imgMarker", "http://bestapp.site/graduationproject/upload/job_type/1571658886_active.png");
-        listJob2.put("imgSelected", "http://bestapp.site/graduationproject/upload/job_type/1571658814_selected.png");
+        listJob2.put("image", link + "/uploads/hotcar.png");
+        listJob2.put("imgActive", link + "/uploads/hotcar.png");
+        listJob2.put("imgMarker", link + "/uploads/hotcar.png");
+        listJob2.put("imgSelected", link + "/uploads/hotcar.png");
         listJob2.put("pickUpAtA", "1");
         listJob2.put("workAtB", "0");
         listJob2.put("taskRate", "0");

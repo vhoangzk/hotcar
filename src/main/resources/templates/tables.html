@@ -10,20 +10,20 @@
     <!-- Breadcrumbs-->
     <ol class="breadcrumb">
         <li class="breadcrumb-item">
-            <a href="#">Dashboard</a>
+            <a href="#">Trang chủ</a>
         </li>
-        <li class="breadcrumb-item active">Tables</li>
+        <li class="breadcrumb-item active">Danh sách người dùng</li>
     </ol>
 
     <!-- DataTables Example -->
     <div class="card mb-3">
         <div class="card-header">
             <i class="fas fa-table"></i>
-            Data Table Example
+            Danh sách người dùng
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                     <tr>
                         <th>ID</th>
@@ -32,6 +32,7 @@
                         <th>Email</th>
                         <th>Số điện thoại</th>
                         <th>Trạng thái</th>
+                        <th></th>
                     </tr>
                     </thead>
                     <tfoot>
@@ -42,6 +43,7 @@
                         <th>Email</th>
                         <th>Số điện thoại</th>
                         <th>Trạng thái</th>
+                        <th></th>
                     </tr>
                     </tfoot>
                     <tbody>
@@ -56,7 +58,8 @@
                         <td><img th:src="${url + user.image}" th:alt="${user.fullName}" width="120px"></td>
                         <td th:text="${user.email}">61</td>
                         <td th:text="${user.phone}">2011/04/25</td>
-                        <td th:text="${user.status}">$320,800</td>
+                        <td th:text="${user.status == 2} ? 'Bị khóa' : 'Đang hoạt động'" th:class="${user.status == 2} ? 'text-danger' : 'text-success'">$320,800</td>
+                        <td><a th:id="${user.id}" href="javascript:void(0);" th:class="(${user.status == 2} ? 'btn btn-primary btn-user-status' : 'btn btn-danger btn-user-status')" th:text="${user.status == 2 ? 'Kích hoạt' : 'Vô hiệu hóa'}"></a></td>
                     </tr>
                     </tbody>
                 </table>
